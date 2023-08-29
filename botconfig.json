@@ -1,0 +1,11 @@
+{
+  "chain": "goerliEthereum",
+  "accountAddress": "<YOUR_WALLET_ADDRESS>",
+  "privateKey": "<YOUR_PRIVATE_KEY>",
+  "httpsProviders": {
+    "ethereum": "<PROVIDER_URL>",
+    "arbitrum": "<PROVIDER_URL>",
+    "goerliEthereum": "<PROVIDER_URL>",
+    "goerliArbitrum": "<PROVIDER_URL>"
+  }
+}
