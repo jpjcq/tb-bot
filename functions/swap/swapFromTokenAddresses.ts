@@ -32,12 +32,12 @@ export default async function swapFromTokenAddresses(
   tokenAmount: number,
   feeAmountInput?: number
 ) {
-  const tokenIn = await getTokenInstance(tokenInAddress);
-  const tokenOut = await getTokenInstance(tokenOutAddress);
-
   const provider = getProvider();
 
   const wallet = new Wallet(PRIVATE_KEY).connect(provider);
+
+  const tokenIn = await getTokenInstance(tokenInAddress);
+  const tokenOut = await getTokenInstance(tokenOutAddress);
 
   let feeAmount = 3000;
 

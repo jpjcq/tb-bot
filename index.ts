@@ -15,10 +15,15 @@ import getQuoteFromAddresses from "./functions/getQuoteFromAddresses";
 import getAvailableChains from "./functions/botconfig/get/getAvailableChains";
 import addToken from "./functions/tokens/addToken";
 import swapFromSymbols from "./functions/swap/swapFromSymbols";
+import { getAllTokens, getTokensByChain } from "./functions/tokens/getTokens";
+import addOrder from "./functions/orders/limit/addOrder";
+import removeOrder from "./functions/orders/limit/removeOrder";
+import buyMarket from "./functions/orders/market/buyMarket";
+import sellMarket from "./functions/orders/market/sellMarket";
 
-program.name("tch4ng-bot").version("1.0.0").description("Crypto utilities bot");
+program.name("tb-bot").version("1.0.0").description("Crypto utilities bot");
 
-// Token pre defined functions
+// Token pre defined functions (TODO: delete)
 program
   .command("listenarb")
   .option("-t --transfer", "Listen to token transfer listener")
@@ -64,6 +69,38 @@ program
     getQuoteFromAddresses(tokenIn, tokenOut, tokenAmount, feeAmount, true);
   });
 
+// Limit orders functions
+program
+  .command("buymarket <token1> <token2> <tokenAmount> [feeAmount]")
+  .action(function (token1, token2, tokenAmount, feeAmount) {
+    buyMarket(token1, token2, tokenAmount, feeAmount);
+  });
+
+program
+  .command("sellmarket <token1> <token2> <tokenAmount> [feeAmount]")
+  .action(function (token1, token2, tokenAmount, feeAmount) {
+    sellMarket(token1, token2, tokenAmount, feeAmount);
+  });
+
+program
+  .command(
+    "addorder <tokenInSymbol> <tokenOutSymbol> <tokenAmount> <price> [feeAmount]"
+  )
+  .action(function (
+    tokenInSymbol,
+    tokenOutSymbol,
+    tokenAmount,
+    price,
+    feeAmount,
+    options
+  ) {
+    addOrder(tokenInSymbol, tokenOutSymbol, tokenAmount, price, feeAmount);
+  });
+
+program.command("removeorder <orderId>").action(function (orderId) {
+  removeOrder(orderId);
+});
+
 // Botconfig functions
 program.command("setchain <chain>").action(function (chain) {
   setChain(chain);
@@ -98,8 +135,17 @@ program.command("getbalance").action(function () {
   getBalance();
 });
 
+// Tokens functions
 program.command("addtoken <address>").action(function (address) {
   addToken(address);
+});
+
+program.command("gettokens [chain]").action(function (chain) {
+  if (chain) {
+    getTokensByChain(chain);
+  } else {
+    getAllTokens();
+  }
 });
 
 program.parse();

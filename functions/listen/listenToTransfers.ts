@@ -1,3 +1,5 @@
+import { appendFile } from "fs/promises";
+import path from "path";
 import { JsonRpcProvider, ethers } from "ethers";
 import { Erc20__factory } from "../../types/ethers-contracts";
 
@@ -17,11 +19,19 @@ export default async function listenToTransfers(
   const transferFilter =
     tokenContract.filters["Transfer(address,address,uint256)"];
 
-  await tokenContract.addListener(transferFilter, (from, to, amountInWei) =>
-    console.log(
-      `[${tokenName} transfer]: ${from} to ${to}, amount: ${Number(
+  await tokenContract.addListener(
+    transferFilter,
+    async (from, to, amountInWei) => {
+      const event = `[${tokenName} transfer]: ${from} to ${to}, amount: ${Number(
         ethers.formatEther(amountInWei)
-      ).toFixed(2)} $${tokenTicker}`
-    )
+      ).toFixed(2)} $${tokenTicker}`;
+
+      console.log(event);
+
+      await appendFile(
+        path.resolve(__dirname, "../../logs/logs.txt"),
+        event + "\n"
+      );
+    }
   );
 }

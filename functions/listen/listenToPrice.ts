@@ -2,6 +2,8 @@ import { JsonRpcProvider } from "ethers";
 import { UniswapV3Pool__factory } from "../../types/ethers-contracts";
 import getQuoteCurrency from "../../utils/getQuoteCurrency";
 import getAmountsAndTicker from "../../utils/getAmountsAndTickers";
+import { appendFile } from "fs/promises";
+import path from "path";
 
 /**
  * Logs the price of a token according to it's pair address,
@@ -42,12 +44,18 @@ export default async function listenToPrice(
         (Number(priceBigInt) / 10 ** 18).toFixed(18)
       );
 
+      // VERIFY ORDERBOOK TO GET CORRESPONDING ORDER TO EXECUTE
+
       // logs and prints
       const event = `[${baseTokenName} price]: ${priceDecimal.toFixed(
         4
-      )} $${quoteTicker}`;
+      )} $${quoteTicker}\n`;
 
       console.log(event);
+      await appendFile(
+        path.resolve(__dirname, "../../logs/logs.txt"),
+        event + "\n"
+      );
     }
   );
 }

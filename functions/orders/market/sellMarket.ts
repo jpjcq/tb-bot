@@ -15,26 +15,30 @@ import {
   MAX_FEE_PER_GAS,
   MAX_PRIORITY_FEE_PER_GAS,
   uniswapContracts,
-} from "../../constants";
+} from "../../../constants";
 import {
   privateKey as PRIVATE_KEY,
   accountAddress as ACCOUNT_ADDRESS,
-} from "../../botconfig.json";
-import { UniswapV3Pool__factory } from "../../types/ethers-contracts";
-import getPoolInfos from "./getPoolInfos";
-import getProvider from "../../utils/getProvider";
-import getApproval from "./getApproval";
-import tokensFile from "../../tokens.json";
-import botconfig from "../../botconfig.json";
-import { TokensType } from "../../types/tokenType";
-import getTokenFromSymbol from "../../utils/getTokenFromSymbol";
+} from "../../../botconfig.json";
+import { UniswapV3Pool__factory } from "../../../types/ethers-contracts";
+import getPoolInfos from "../../swap/getPoolInfos";
+import getProvider from "../../../utils/getProvider";
+import getApproval from "../../swap/getApproval";
+import tokensFile from "../../../tokens.json";
+import botconfig from "../../../botconfig.json";
+import { TokensType } from "../../../types/tokenType";
+import getTokenFromSymbol from "../../../utils/getTokenFromSymbol";
+import getBaseAndQuote from "../getBaseAndQuote";
 
-export default async function swapFromSymbols(
-  tokenInSymbol: string,
-  tokenOutSymbol: string,
+export default async function sellMarket(
+  token1SymbolInput: string,
+  token2SymbolInput: string,
   tokenAmount: number,
   feeAmountInput?: number
 ) {
+  const token1Symbol = token1SymbolInput.toLocaleUpperCase();
+  const token2Symbol = token2SymbolInput.toLocaleUpperCase();
+
   const tokens = tokensFile as TokensType;
 
   if (!tokens[botconfig.chain]) {
@@ -44,8 +48,8 @@ export default async function swapFromSymbols(
     return;
   }
 
-  const tokenIn = getTokenFromSymbol(tokenInSymbol)!;
-  const tokenOut = getTokenFromSymbol(tokenOutSymbol)!;
+  const token1 = getTokenFromSymbol(token1Symbol)!;
+  const token2 = getTokenFromSymbol(token2Symbol)!;
 
   const provider = getProvider();
 
@@ -58,8 +62,8 @@ export default async function swapFromSymbols(
   // get pool address
   const currentPoolAddress = computePoolAddress({
     factoryAddress: uniswapContracts.ethereum.UNISWAP_V3_FACTORY_ADDRESS,
-    tokenA: tokenIn, //in
-    tokenB: tokenOut, //out
+    tokenA: token1, //in
+    tokenB: token2, //out
     fee: feeAmount,
   });
 
@@ -71,22 +75,25 @@ export default async function swapFromSymbols(
   const { sqrtPriceX96, liquidity, tick } = await getPoolInfos(poolContract);
 
   const pool = new Pool(
-    tokenIn,
-    tokenOut,
+    token1,
+    token2,
     feeAmount,
     sqrtPriceX96.toString(),
     liquidity.toString(),
     tick
   );
 
-  const swapRoute = new Route([pool], tokenIn, tokenOut);
+  const { baseToken, quoteCurrency } = getBaseAndQuote(token1, token2);
+
+  // sell: brings base to get quote
+  const swapRoute = new Route([pool], baseToken, quoteCurrency);
 
   // create quote call data (hex to send when call a txn with provider)
   const { calldata: quoteCalldata } = SwapQuoter.quoteCallParameters(
     swapRoute,
     CurrencyAmount.fromRawAmount(
-      tokenIn,
-      parseUnits(tokenAmount.toString(), tokenIn.decimals).toString()
+      token1,
+      parseUnits(tokenAmount.toString(), token1.decimals).toString()
     ),
     TradeType.EXACT_INPUT
   );
@@ -107,11 +114,11 @@ export default async function swapFromSymbols(
   const trade = Trade.createUncheckedTrade({
     route: swapRoute,
     inputAmount: CurrencyAmount.fromRawAmount(
-      tokenIn,
-      parseUnits(tokenAmount.toString(), tokenIn.decimals).toString()
+      token1,
+      parseUnits(tokenAmount.toString(), token1.decimals).toString()
     ),
     outputAmount: CurrencyAmount.fromRawAmount(
-      tokenOut,
+      token2,
       JSBI.BigInt(decodedQuoteResponse) //ici
     ),
     tradeType: TradeType.EXACT_INPUT,
@@ -136,7 +143,7 @@ export default async function swapFromSymbols(
     const transactionReceipt = await getApproval(
       uniswapContracts.ethereum.UNISWAP_V3_ROUTER_ADDRESS,
       tokenAmount,
-      tokenIn
+      token1
     );
     console.log(`[TCH4NG-BOT] Token approval success:`);
     console.log(`hash: ${transactionReceipt?.hash}`);
@@ -158,20 +165,19 @@ export default async function swapFromSymbols(
   try {
     const ok = await yesno({
       question: `[TCH4NG-BOT] Swap ${tokenAmount} ${
-        tokenIn.symbol
-      } for ${formatUnits(
-        decodedQuoteResponse.toString(),
-        tokenOut.decimals
-      )} ${tokenOut.symbol} ?`,
+        token1.symbol
+      } for ${formatUnits(decodedQuoteResponse.toString(), token2.decimals)} ${
+        token2.symbol
+      } ?`,
     });
     if (!ok) return;
     const swapResponse = await wallet.sendTransaction(ethSwapTransaction);
     console.log(`[TCH4NG-BOT] Swap success:`);
     console.log(
-      `Swapped ${tokenAmount} ${tokenIn.symbol} for ${formatUnits(
+      `Swapped ${tokenAmount} ${token1.symbol} for ${formatUnits(
         decodedQuoteResponse.toString(),
-        tokenOut.decimals
-      )} ${tokenOut.symbol}`
+        token2.decimals
+      )} ${token2.symbol}`
     );
     console.log(`hash: ${swapResponse.hash}`);
   } catch (e) {

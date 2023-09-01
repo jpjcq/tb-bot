@@ -3,7 +3,7 @@ import {
   Erc20__factory,
   UniswapV3Pool__factory,
 } from "../types/ethers-contracts";
-import { QUOTE_CURRENCIES } from "../constants";
+import { STABLECOINS, SECONDARY_QUOTE_CURRENCIES } from "../constants";
 
 /**
  * ASYNC | Determine which of two tokens of a given pair address is base token and quote currency
@@ -29,11 +29,17 @@ export default async function getQuoteCurrency(
   const token0Name = await token0Contract.name();
   const token1Name = await token1Contract.name();
 
-  if (QUOTE_CURRENCIES.includes(token0Name)) {
+  if (
+    STABLECOINS.includes(token0Name) ||
+    SECONDARY_QUOTE_CURRENCIES.includes(token0Name)
+  ) {
     return 0;
   }
 
-  if (QUOTE_CURRENCIES.includes(token1Name)) {
+  if (
+    STABLECOINS.includes(token1Name) ||
+    SECONDARY_QUOTE_CURRENCIES.includes(token1Name)
+  ) {
     return 1;
   }
 

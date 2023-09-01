@@ -3,16 +3,16 @@ import { writeFile } from "fs/promises";
 import path from "path";
 import { Erc20__factory } from "../../types/ethers-contracts";
 import botconfig from "../../botconfig.json";
-import tokens from "../../tokens.json";
+import tokensFile from "../../tokens.json";
 import { ChainKey } from "../../constants/types";
 import { TokensType } from "../../types/tokenType";
 import getProvider from "../../utils/getProvider";
 
 export default async function addToken(address: string) {
   const provider = getProvider();
-  const chainSelected = botconfig.chain as ChainKey;
+  const selectedChain = botconfig.chain as ChainKey;
   const tokenFactory = Erc20__factory.connect(address, provider);
-  const tokensDb = tokens as TokensType;
+  const tokens = tokensFile as TokensType;
   let decimals;
   let symbol;
   let name;
@@ -22,11 +22,11 @@ export default async function addToken(address: string) {
     symbol = await tokenFactory.symbol();
     name = await tokenFactory.name();
 
-    if (!tokensDb[chainSelected]) {
-      tokensDb[chainSelected] = {};
+    if (!tokens[selectedChain]) {
+      tokens[selectedChain] = {};
     }
 
-    tokensDb[chainSelected][symbol] = {
+    tokens[selectedChain][symbol] = {
       name,
       symbol,
       address,
@@ -50,7 +50,7 @@ export default async function addToken(address: string) {
     }
   }
 
-  const newTokensJson = JSON.stringify(tokensDb, null, 2);
+  const newTokensJson = JSON.stringify(tokens, null, 2);
 
   try {
     await writeFile(
@@ -59,7 +59,7 @@ export default async function addToken(address: string) {
     );
     console.log(`[TCH4NG-BOT] Success! Token ${symbol} added`);
   } catch (e) {
-    console.log(`[TCH4NG-BOT] Error while adding token:`);
+    console.log(`[TCH4NG-BOT] Error while writing tokens.json file:`);
     console.log(e);
   }
 }
