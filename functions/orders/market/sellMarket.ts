@@ -86,14 +86,17 @@ export default async function sellMarket(
   const { baseToken, quoteCurrency } = getBaseAndQuote(token1, token2);
 
   // sell: brings base to get quote
-  const swapRoute = new Route([pool], baseToken, quoteCurrency);
+  const tokenIn = baseToken;
+  const tokenOut = quoteCurrency;
+
+  const swapRoute = new Route([pool], tokenIn, tokenOut);
 
   // create quote call data (hex to send when call a txn with provider)
   const { calldata: quoteCalldata } = SwapQuoter.quoteCallParameters(
     swapRoute,
     CurrencyAmount.fromRawAmount(
-      token1,
-      parseUnits(tokenAmount.toString(), token1.decimals).toString()
+      quoteCurrency,
+      parseUnits(tokenAmount.toString(), quoteCurrency.decimals).toString()
     ),
     TradeType.EXACT_INPUT
   );
@@ -114,11 +117,11 @@ export default async function sellMarket(
   const trade = Trade.createUncheckedTrade({
     route: swapRoute,
     inputAmount: CurrencyAmount.fromRawAmount(
-      token1,
-      parseUnits(tokenAmount.toString(), token1.decimals).toString()
+      tokenIn,
+      parseUnits(tokenAmount.toString(), tokenIn.decimals).toString()
     ),
     outputAmount: CurrencyAmount.fromRawAmount(
-      token2,
+      tokenOut,
       JSBI.BigInt(decodedQuoteResponse) //ici
     ),
     tradeType: TradeType.EXACT_INPUT,
@@ -143,7 +146,7 @@ export default async function sellMarket(
     const transactionReceipt = await getApproval(
       uniswapContracts.ethereum.UNISWAP_V3_ROUTER_ADDRESS,
       tokenAmount,
-      token1
+      tokenIn
     );
     console.log(`[TCH4NG-BOT] Token approval success:`);
     console.log(`hash: ${transactionReceipt?.hash}`);
@@ -164,20 +167,23 @@ export default async function sellMarket(
   // swap
   try {
     const ok = await yesno({
-      question: `[TCH4NG-BOT] Swap ${tokenAmount} ${
-        token1.symbol
-      } for ${formatUnits(decodedQuoteResponse.toString(), token2.decimals)} ${
-        token2.symbol
-      } ?`,
+      question: `\n| [TCH4NG-BOT] SELL RECAP:\n|\n|    - SELL  ${tokenAmount} ${
+        baseToken.symbol
+      }\n|\n|    - FOR ${formatUnits(
+        decodedQuoteResponse.toString(),
+        quoteCurrency.decimals
+      )} ${
+        quoteCurrency.symbol
+      }\n|\n| VALIDATE ? Type yes or no then press enter\n`,
     });
     if (!ok) return;
     const swapResponse = await wallet.sendTransaction(ethSwapTransaction);
     console.log(`[TCH4NG-BOT] Swap success:`);
     console.log(
-      `Swapped ${tokenAmount} ${token1.symbol} for ${formatUnits(
+      `SOLD: ${tokenAmount} ${baseToken.symbol} for ${formatUnits(
         decodedQuoteResponse.toString(),
-        token2.decimals
-      )} ${token2.symbol}`
+        quoteCurrency.decimals
+      )} ${quoteCurrency.symbol}`
     );
     console.log(`hash: ${swapResponse.hash}`);
   } catch (e) {
