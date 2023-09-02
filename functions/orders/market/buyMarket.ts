@@ -211,7 +211,6 @@ export default async function buyMarket(
       return;
     }
     const swapResponse = await wallet.sendTransaction(ethSwapTransaction);
-    console.log(`[TCH4NG-BOT] Swap success:`);
     console.log(
       `\n| [TCH4NG-BOT] SUCCESS! BUY RECAP:\n|\n|    - BOUGHT ${baseAmount.toFixed(
         6

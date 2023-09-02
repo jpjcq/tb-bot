@@ -32,7 +32,6 @@ import botconfig from "../../../botconfig.json";
 import { TokensType } from "../../../types/tokenType";
 import getTokenFromSymbol from "../../../utils/getTokenFromSymbol";
 import getBaseAndQuote from "../getBaseAndQuote";
-import boxen from "boxen";
 
 export default async function sellMarket(
   token1SymbolInput: string,
@@ -198,23 +197,19 @@ export default async function sellMarket(
   // swap
   try {
     const ok = await yesno({
-      question: `\n${boxen(
-        `[TCH4NG-BOT] YOU WILL:\n|\n|    - SELL ${baseAmount} ${
-          baseToken.symbol
-        }    - FOR ${quoteAmount.toFixed(6)} ${
-          quoteCurrency.symbol
-        }    - PRICE ${price.toFixed(6)} ${baseToken.symbol}/${
-          quoteCurrency.symbol
-        } VALIDATE ? Type yes or no then press enter`,
-        { padding: 1 }
-      )}\n`,
+      question: `\n| [TCH4NG-BOT] YOU WILL:\n|\n|    - SELL ${baseAmount} ${
+        baseToken.symbol
+      }\n|\n|    - FOR ${quoteAmount} ${
+        quoteCurrency.symbol
+      }\n|\n|    - PRICE ${price.toFixed(6)} ${baseToken.symbol}/${
+        quoteCurrency.symbol
+      }\n|\n| VALIDATE ? Type yes or no then press enter\n`,
     });
     if (!ok) {
       console.log(`[TCH4NG-BOT] Transaction canceled`);
       return;
     }
     const swapResponse = await wallet.sendTransaction(ethSwapTransaction);
-    console.log(`[TCH4NG-BOT] Swap success:`);
     console.log(
       `\n| [TCH4NG-BOT] SUCCESS! SELL RECAP:\n|\n|    - SOLD ${baseAmount} ${
         baseToken.symbol
