@@ -20,7 +20,10 @@ import {
   privateKey as PRIVATE_KEY,
   accountAddress as ACCOUNT_ADDRESS,
 } from "../../../botconfig.json";
-import { UniswapV3Pool__factory } from "../../../types/ethers-contracts";
+import {
+  Erc20__factory,
+  UniswapV3Pool__factory,
+} from "../../../types/ethers-contracts";
 import getPoolInfos from "../../swap/getPoolInfos";
 import getProvider from "../../../utils/getProvider";
 import getApproval from "../../swap/getApproval";
@@ -89,6 +92,25 @@ export default async function buyMarket(
   const tokenIn = quoteCurrency;
   const tokenOut = baseToken;
 
+  // Checking tokenIn balance
+  const tokenInBalance = await Erc20__factory.connect(
+    tokenIn.address,
+    provider
+  ).balanceOf(wallet.address);
+
+  if (tokenAmount > Number(formatUnits(tokenInBalance, tokenIn.decimals))) {
+    console.log(
+      `[TCH4NG-BOT] Insufficient ${
+        tokenIn.symbol
+      } balance. You're trying to swap ${tokenAmount} ${
+        tokenIn.symbol
+      } but you only have ${Number(
+        formatUnits(tokenInBalance, tokenIn.decimals)
+      ).toFixed(6)} ${tokenIn.symbol}`
+    );
+    return;
+  }
+
   const swapRoute = new Route([pool], tokenIn, tokenOut);
 
   // create quote call data (hex to send when call a txn with provider)
@@ -122,7 +144,7 @@ export default async function buyMarket(
     ),
     outputAmount: CurrencyAmount.fromRawAmount(
       tokenOut,
-      JSBI.BigInt(decodedQuoteResponse) //ici
+      JSBI.BigInt(decodedQuoteResponse)
     ),
     tradeType: TradeType.EXACT_INPUT,
   });
@@ -164,28 +186,41 @@ export default async function buyMarket(
     maxPriorityFeePerGas: MAX_PRIORITY_FEE_PER_GAS,
   };
 
+  const price =
+    tokenAmount /
+    parseFloat(
+      formatUnits(decodedQuoteResponse.toString(), quoteCurrency.decimals)
+    );
+
+  const baseAmount = Number(formatUnits(decodedQuoteResponse.toString()));
+  const quoteAmount = tokenAmount;
+
   // swap
   try {
     const ok = await yesno({
-      question: `\n| [TCH4NG-BOT] BUY RECAP:\n|\n|    - BUY  ${tokenAmount} ${
-        baseToken.symbol
-      }\n|\n|    - FOR ${formatUnits(
-        decodedQuoteResponse.toString(),
-        quoteCurrency.decimals
-      )} ${
+      question: `\n| [TCH4NG-BOT] YOU WILL:\n|\n|    - BUY ${baseAmount.toFixed(
+        6
+      )} ${baseToken.symbol}\n|\n|    - FOR ${quoteAmount} ${
+        quoteCurrency.symbol
+      }\n|\n|    - PRICE ${price.toFixed(6)} ${baseToken.symbol}/${
         quoteCurrency.symbol
       }\n|\n| VALIDATE ? Type yes or no then press enter\n`,
     });
-    if (!ok) return;
+    if (!ok) {
+      console.log(`[TCH4NG-BOT] Transaction canceled`);
+      return;
+    }
     const swapResponse = await wallet.sendTransaction(ethSwapTransaction);
     console.log(`[TCH4NG-BOT] Swap success:`);
     console.log(
-      `BOUGHT: ${tokenAmount} ${baseToken.symbol} for ${formatUnits(
-        decodedQuoteResponse.toString(),
-        quoteCurrency.decimals
-      )} ${quoteCurrency.symbol}`
+      `\n| [TCH4NG-BOT] SUCCESS! BUY RECAP:\n|\n|    - BOUGHT ${baseAmount.toFixed(
+        6
+      )} ${baseToken.symbol}\n|\n|    - FOR ${quoteAmount} ${
+        quoteCurrency.symbol
+      }\n|\n|    - PRICE ${price.toFixed(6)} ${baseToken.symbol}/${
+        quoteCurrency.symbol
+      }\n|\n|    - HASH: ${swapResponse.hash}`
     );
-    console.log(`hash: ${swapResponse.hash}`);
   } catch (e) {
     console.log(`[TCH4NG-BOT] Swap failed:`);
     console.log(e);
