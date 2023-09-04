@@ -11,9 +11,9 @@ export default async function setAccountAddress(accountAddress: string) {
     await writeFile("botconfig.json", botconfigStr, "utf-8");
 
     console.log(
-      `[TCH4NG-BOT] Success! Account address set to ${accountAddress}`
+      `[TB-BOT] Success! Account address set to ${accountAddress}`
     );
   } catch (e) {
-    console.log(`[TCH4NG-BOT] Error while updating botconfig.json file: ${e}`);
+    console.log(`[TB-BOT] Error while updating botconfig.json file: ${e}`);
   }
 }

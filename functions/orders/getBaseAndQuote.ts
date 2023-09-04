@@ -22,7 +22,7 @@ export default function getBaseAndQuote(
   // If both tokens are stablecoins, throw
   if (STABLECOINS.includes(name1) && STABLECOINS.includes(name2)) {
     throw new Error(
-      `[TCH4NG-BOT] Both tokens are stablecoins, to swap stablecoins please use the tb swap command`
+      `[TB-BOT] Both tokens are stablecoins, to swap stablecoins please use the tb swap command`
     );
   }
   // If one of the tokens is a stablecoin, define base and quote
@@ -46,13 +46,13 @@ export default function getBaseAndQuote(
     SECONDARY_QUOTE_CURRENCIES.includes(name2)
   ) {
     throw new Error(
-      `[TCH4NG-BOT] One of the two tokens must be a base token, to swap between quote currencies (e.g. WETH), please use the tb swap command`
+      `[TB-BOT] One of the two tokens must be a base token, to swap between quote currencies (e.g. WETH), please use the tb swap command`
     );
   }
   // If none of the above conditions are met, throw
   else {
     throw new Error(
-      `[TCH4NG-BOT] One of the two tokens must be a stablecoin or a secondary quote currency (e.g. WETH)`
+      `[TB-BOT] One of the two tokens must be a stablecoin or a secondary quote currency (e.g. WETH)`
     );
   }
 

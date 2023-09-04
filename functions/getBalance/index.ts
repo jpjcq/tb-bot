@@ -10,8 +10,8 @@ export default async function getBalance() {
   try {
     const balance = await provider.getBalance(wallet.address);
 
-    console.log(`[TCH4NG-BOT] Your ETH balance is: ${formatEther(balance)}`);
+    console.log(`[TB-BOT] Your ETH balance is: ${formatEther(balance)}`);
   } catch (e) {
-    console.log(`[TCH4NG-BOT] Error while getting your ETH balance:\n${e}`);
+    console.log(`[TB-BOT] Error while getting your ETH balance:\n${e}`);
   }
 }

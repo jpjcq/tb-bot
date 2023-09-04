@@ -61,7 +61,7 @@ export default async function getQuote(
 
   if (getLog)
     console.log(
-      `[TCH4NG-BOT] Quote result for ${tokenAmount} ${tokenIn.symbol}:\n${result} ${tokenOut.symbol}`
+      `[TB-BOT] Quote result for ${tokenAmount} ${tokenIn.symbol}:\n${result} ${tokenOut.symbol}`
     );
 
   return result;

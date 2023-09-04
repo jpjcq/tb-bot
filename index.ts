@@ -16,10 +16,11 @@ import getAvailableChains from "./functions/botconfig/get/getAvailableChains";
 import addToken from "./functions/tokens/addToken";
 import swapFromSymbols from "./functions/swap/swapFromSymbols";
 import { getAllTokens, getTokensByChain } from "./functions/tokens/getTokens";
-import addOrder from "./functions/orders/limit/addOrder";
+import buyLimit from "./functions/orders/limit/buyLimit";
 import removeOrder from "./functions/orders/limit/removeOrder";
 import buyMarket from "./functions/orders/market/buyMarket";
 import sellMarket from "./functions/orders/market/sellMarket";
+import sellLimit from "./functions/orders/limit/sellLimit";
 
 program.name("tb-bot").version("1.0.0").description("Crypto utilities bot");
 
@@ -58,7 +59,7 @@ program
       swapFromSymbols(tokenIn, tokenOut, tokenAmount, feeAmount);
     } else {
       console.log(
-        `[TCH4NG-BOT] Please choose a flag to choose the way you want to swap`
+        `[TB-BOT] Please choose a flag to choose the way you want to swap`
       );
     }
   });
@@ -84,17 +85,30 @@ program
 
 program
   .command(
-    "addorder <tokenInSymbol> <tokenOutSymbol> <tokenAmount> <price> [feeAmount]"
+    "buylimit <tokenInSymbol> <tokenOutSymbol> <tokenAmount> <price> [feeAmount]"
   )
   .action(function (
     tokenInSymbol,
     tokenOutSymbol,
     tokenAmount,
     price,
-    feeAmount,
-    options
+    feeAmount
   ) {
-    addOrder(tokenInSymbol, tokenOutSymbol, tokenAmount, price, feeAmount);
+    buyLimit(tokenInSymbol, tokenOutSymbol, tokenAmount, price, feeAmount);
+  });
+
+program
+  .command(
+    "selllimit <tokenInSymbol> <tokenOutSymbol> <tokenAmount> <price> [feeAmount]"
+  )
+  .action(function (
+    tokenInSymbol,
+    tokenOutSymbol,
+    tokenAmount,
+    price,
+    feeAmount
+  ) {
+    sellLimit(tokenInSymbol, tokenOutSymbol, tokenAmount, price, feeAmount);
   });
 
 program.command("removeorder <orderId>").action(function (orderId) {
@@ -122,7 +136,7 @@ program.command("getavailablechains").action(function () {
   getAvailableChains();
 });
 
-program.command("getaccountaddress").action(function () {
+program.command("getaccount").action(function () {
   getAccountAddress();
 });
 

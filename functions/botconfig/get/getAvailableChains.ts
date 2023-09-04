@@ -7,6 +7,6 @@ export default function getAvailableChains() {
     availableChains.push(chain);
   }
 
-  console.log(`[TCH4NG-BOT] Avalaible chains to set:`);
+  console.log(`[TB-BOT] Avalaible chains to set:`);
   console.log(availableChains);
 }

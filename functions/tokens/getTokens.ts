@@ -4,7 +4,7 @@ import tokens from "../../tokens.json";
 import { TokensType } from "../../types/tokenType";
 
 export function getAllTokens() {
-  console.log("[TCH4NG-BOT] List of added tokens:");
+  console.log("[TB-BOT] List of added tokens:");
   console.log(tokens);
 }
 
@@ -18,16 +18,16 @@ export function getTokensByChain(chain: ChainKey) {
 
   if (!availableChains.includes(chain)) {
     console.error(
-      `[TCH4NG-BOT] Argument error. Please choose one of the following chains as setChain's argument:`
+      `[TB-BOT] Argument error. Please choose one of the following chains as setChain's argument:`
     );
     console.log(availableChains);
     return;
   }
 
   if (tokensDb[chain]) {
-    console.log(`[TCH4NG-BOT] List of ${chain} tokens:`);
+    console.log(`[TB-BOT] List of ${chain} tokens:`);
     console.log(tokensDb[chain]);
   } else {
-    console.log(`[TCH4NG-BOT] No token has been added for ${chain} yet`);
+    console.log(`[TB-BOT] No token has been added for ${chain} yet`);
   }
 }

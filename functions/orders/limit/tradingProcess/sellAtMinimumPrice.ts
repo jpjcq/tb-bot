@@ -15,26 +15,34 @@ import {
   MAX_FEE_PER_GAS,
   MAX_PRIORITY_FEE_PER_GAS,
   uniswapContracts,
-} from "../../constants";
+} from "../../../../constants";
 import {
   privateKey as PRIVATE_KEY,
   accountAddress as ACCOUNT_ADDRESS,
-} from "../../botconfig.json";
-import { UniswapV3Pool__factory } from "../../types/ethers-contracts";
-import getPoolInfos from "./getPoolInfos";
-import getProvider from "../../utils/getProvider";
-import getApproval from "./getApproval";
-import tokensFile from "../../tokens.json";
-import botconfig from "../../botconfig.json";
-import { TokensType } from "../../types/tokenType";
-import getTokenFromSymbol from "../../utils/getTokenFromSymbol";
+} from "../../../../botconfig.json";
+import {
+  Erc20__factory,
+  UniswapV3Pool__factory,
+} from "../../../../types/ethers-contracts";
+import getPoolInfos from "../../../swap/getPoolInfos";
+import getProvider from "../../../../utils/getProvider";
+import getApproval from "../../../swap/getApproval";
+import tokensFile from "../../../../tokens.json";
+import botconfig from "../../../../botconfig.json";
+import { TokensType } from "../../../../types/tokenType";
+import getTokenFromSymbol from "../../../../utils/getTokenFromSymbol";
+import getBaseAndQuote from "../../getBaseAndQuote";
 
-export default async function swapFromSymbols(
-  tokenInSymbol: string,
-  tokenOutSymbol: string,
+export default async function sellAtMinimumPrice(
+  token1SymbolInput: string,
+  token2SymbolInput: string,
   tokenAmount: number,
+  priceInput: number,
   feeAmountInput?: number
 ) {
+  const token1Symbol = token1SymbolInput.toLocaleUpperCase();
+  const token2Symbol = token2SymbolInput.toLocaleUpperCase();
+
   const tokens = tokensFile as TokensType;
 
   if (!tokens[botconfig.chain]) {
@@ -44,8 +52,8 @@ export default async function swapFromSymbols(
     return;
   }
 
-  const tokenIn = getTokenFromSymbol(tokenInSymbol)!;
-  const tokenOut = getTokenFromSymbol(tokenOutSymbol)!;
+  const token1 = getTokenFromSymbol(token1Symbol)!;
+  const token2 = getTokenFromSymbol(token2Symbol)!;
 
   const provider = getProvider();
 
@@ -58,8 +66,8 @@ export default async function swapFromSymbols(
   // get pool address
   const currentPoolAddress = computePoolAddress({
     factoryAddress: uniswapContracts.ethereum.UNISWAP_V3_FACTORY_ADDRESS,
-    tokenA: tokenIn, //in
-    tokenB: tokenOut, //out
+    tokenA: token1, //in
+    tokenB: token2, //out
     fee: feeAmount,
   });
 
@@ -71,13 +79,38 @@ export default async function swapFromSymbols(
   const { sqrtPriceX96, liquidity, tick } = await getPoolInfos(poolContract);
 
   const pool = new Pool(
-    tokenIn,
-    tokenOut,
+    token1,
+    token2,
     feeAmount,
     sqrtPriceX96.toString(),
     liquidity.toString(),
     tick
   );
+
+  const { baseToken, quoteCurrency } = getBaseAndQuote(token1, token2);
+
+  // sell: brings base to get quote
+  const tokenIn = baseToken;
+  const tokenOut = quoteCurrency;
+
+  // Checking tokenIn balance
+  const tokenInBalance = await Erc20__factory.connect(
+    tokenIn.address,
+    provider
+  ).balanceOf(wallet.address);
+
+  if (tokenAmount > Number(formatUnits(tokenInBalance, tokenIn.decimals))) {
+    console.log(
+      `[TB-BOT] Insufficient ${
+        tokenIn.symbol
+      } balance. You're trying to swap ${tokenAmount} ${
+        tokenIn.symbol
+      } but you only have ${Number(
+        formatUnits(tokenInBalance, tokenIn.decimals)
+      ).toFixed(6)} ${tokenIn.symbol}`
+    );
+    return;
+  }
 
   const swapRoute = new Route([pool], tokenIn, tokenOut);
 
@@ -85,8 +118,8 @@ export default async function swapFromSymbols(
   const { calldata: quoteCalldata } = SwapQuoter.quoteCallParameters(
     swapRoute,
     CurrencyAmount.fromRawAmount(
-      tokenIn,
-      parseUnits(tokenAmount.toString(), tokenIn.decimals).toString()
+      quoteCurrency,
+      parseUnits(tokenAmount.toString(), quoteCurrency.decimals).toString()
     ),
     TradeType.EXACT_INPUT
   );
@@ -130,6 +163,19 @@ export default async function swapFromSymbols(
     options
   );
 
+  const price =
+    parseFloat(
+      formatUnits(decodedQuoteResponse.toString(), quoteCurrency.decimals)
+    ) / tokenAmount;
+
+  if (price < priceInput) {
+    console.log(
+      `[TB-BOT] Aborting. Price was not met.\nPrice wanted: ${priceInput} | Actual price: ${price.toFixed(
+        6
+      )}`
+    );
+    return;
+  }
   // approve
   try {
     console.log(`[TB-BOT] Sending token approval transation..`);
@@ -154,26 +200,23 @@ export default async function swapFromSymbols(
     maxPriorityFeePerGas: MAX_PRIORITY_FEE_PER_GAS,
   };
 
+  const baseAmount = tokenAmount;
+  const quoteAmount = Number(formatUnits(decodedQuoteResponse.toString()));
+
   // swap
   try {
-    const ok = await yesno({
-      question: `[TB-BOT] Swap ${tokenAmount} ${
-        tokenIn.symbol
-      } for ${formatUnits(
-        decodedQuoteResponse.toString(),
-        tokenOut.decimals
-      )} ${tokenOut.symbol} ?`,
-    });
-    if (!ok) return;
     const swapResponse = await wallet.sendTransaction(ethSwapTransaction);
-    console.log(`[TB-BOT] Swap success:`);
+    const transactionReceipt = await swapResponse.wait();
     console.log(
-      `Swapped ${tokenAmount} ${tokenIn.symbol} for ${formatUnits(
-        decodedQuoteResponse.toString(),
-        tokenOut.decimals
-      )} ${tokenOut.symbol}`
+      `\n| [TB-BOT] SUCCESS! SELL RECAP:\n|\n|    - SOLD ${baseAmount} ${
+        baseToken.symbol
+      }\n|\n|    - FOR ${quoteAmount.toFixed(6)} ${
+        quoteCurrency.symbol
+      }\n|\n|    - PRICE ${price.toFixed(6)} ${baseToken.symbol}/${
+        quoteCurrency.symbol
+      }\n|\n|    - HASH: ${transactionReceipt?.hash}
+      `
     );
-    console.log(`hash: ${swapResponse.hash}`);
   } catch (e) {
     console.log(`[TB-BOT] Swap failed:`);
     console.log(e);

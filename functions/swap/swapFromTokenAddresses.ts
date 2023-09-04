@@ -125,10 +125,10 @@ export default async function swapFromTokenAddresses(
       tokenAmount,
       tokenIn
     );
-    console.log(`[TCH4NG-BOT] Token approval success:`);
+    console.log(`[TB-BOT] Token approval success:`);
     console.log(`hash: ${transactionReceipt?.hash}`);
   } catch (e) {
-    console.log(`[TCH4NG-BOT] Error while approving token:`);
+    console.log(`[TB-BOT] Error while approving token:`);
     console.log(e);
   }
 
@@ -144,7 +144,7 @@ export default async function swapFromTokenAddresses(
   // swap
   try {
     const ok = await yesno({
-      question: `[TCH4NG-BOT] Swap ${tokenAmount} ${
+      question: `[TB-BOT] Swap ${tokenAmount} ${
         tokenIn.symbol
       } for ${formatUnits(
         decodedQuoteResponse.toString(),
@@ -153,7 +153,7 @@ export default async function swapFromTokenAddresses(
     });
     if (!ok) return;
     const swapResponse = await wallet.sendTransaction(ethSwapTransaction);
-    console.log(`[TCH4NG-BOT] Swap success:`);
+    console.log(`[TB-BOT] Swap success:`);
     console.log(
       `Swapped ${tokenAmount} ${tokenIn.symbol} for ${formatUnits(
         decodedQuoteResponse.toString(),
@@ -162,7 +162,7 @@ export default async function swapFromTokenAddresses(
     );
     console.log(`hash: ${swapResponse.hash}`);
   } catch (e) {
-    console.log(`[TCH4NG-BOT] Swap failed:`);
+    console.log(`[TB-BOT] Swap failed:`);
     console.log(e);
   }
 }

@@ -1,11 +1,1 @@
-{
-  "goerliethereum": {
-    "goerliethereum1": {
-      "tokenInSymbol": "WETH",
-      "tokenOutSymbol": "UNI",
-      "tokenAmount": 0.02,
-      "price": 0.005,
-      "feeAmountInput": null
-    }
-  }
-}
+{}

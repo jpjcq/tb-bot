@@ -20,16 +20,16 @@ export default async function setChain(chain: string) {
       await writeFile(path.resolve(__dirname, "../../../botconfig.json"), botconfigStr, "utf-8");
 
       console.log(
-        `[TCH4NG-BOT] Success! Chain set to ${chain.toLocaleUpperCase()}`
+        `[TB-BOT] Success! Chain set to ${chain.toLocaleUpperCase()}`
       );
     } catch (e) {
       console.log(
-        `[TCH4NG-BOT] Error while updating botconfig.json file: ${e}`
+        `[TB-BOT] Error while updating botconfig.json file: ${e}`
       );
     }
   } else {
     console.error(
-      `[TCH4NG-BOT] Argument error. Please choose one of the following chains as setChain's argument:`
+      `[TB-BOT] Argument error. Please choose one of the following chains as setChain's argument:`
     );
     console.log(availableChains);
   }

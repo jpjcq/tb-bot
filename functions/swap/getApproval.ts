@@ -18,7 +18,7 @@ export default async function getApproval(
     parseUnits(amountInEth.toString(), token.decimals)
   );
 
-  console.log("[TCH4NG-BOT] Approval sent, waiting for confirmation receipt..");
+  console.log("[TB-BOT] Approval sent, waiting for confirmation receipt..");
 
   const transactionReceipt = await response.wait();
 

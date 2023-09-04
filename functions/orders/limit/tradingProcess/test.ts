@@ -1,22 +1,6 @@
-import startTradingProcess from "./startTradingProcess";
-import pm2 from "pm2";
+import buyAtMinimumPrice from "./buyAtMinimumPrice";
+import sellAtMinimumPrice from "./sellAtMinimumPrice";
 
-// startTradingProcess("0xc31e54c7a869b9fcbecc14363cf510d1c41fa443");
-
-pm2.connect(function (err) {
-  if (err) {
-    console.log(err);
-    process.exit(2);
-  }
-  pm2.list(function (err, list) {
-    if (err) {
-      console.error(err);
-      return pm2.disconnect();
-    }
-
-    list.forEach(function (process) {
-      console.log(process.name);
-    });
-    pm2.disconnect();
-  });
-});
+(async function () {
+  await sellAtMinimumPrice("UNI", "WETH", 0.01, 0.052);
+})();

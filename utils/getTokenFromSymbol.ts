@@ -9,7 +9,7 @@ export default function getTokenFromSymbol(symbol: string) {
   const tokens = tokensFile as TokensType;
 
   if (!(tokens as TokensType)[botconfig.chain][symbol]) {
-    console.log(`[TCH4NG_BOT] Token ${symbol} doesn't exist`);
+    console.log(`[TB_BOT] Token ${symbol} doesn't exist`);
     return;
   }
 

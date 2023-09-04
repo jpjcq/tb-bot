@@ -46,7 +46,7 @@ export default async function buyMarket(
 
   if (!tokens[botconfig.chain]) {
     console.log(
-      `[TCH4NG_BOT] No token has been saved for the chain ${botconfig.chain}`
+      `[TB_BOT] No token has been saved for the chain ${botconfig.chain}`
     );
     return;
   }
@@ -100,7 +100,7 @@ export default async function buyMarket(
 
   if (tokenAmount > Number(formatUnits(tokenInBalance, tokenIn.decimals))) {
     console.log(
-      `[TCH4NG-BOT] Insufficient ${
+      `[TB-BOT] Insufficient ${
         tokenIn.symbol
       } balance. You're trying to swap ${tokenAmount} ${
         tokenIn.symbol
@@ -164,16 +164,16 @@ export default async function buyMarket(
 
   // approve
   try {
-    console.log(`[TCH4NG-BOT] Sending token approval transation..`);
+    console.log(`[TB-BOT] Sending token approval transation..`);
     const transactionReceipt = await getApproval(
       uniswapContracts.ethereum.UNISWAP_V3_ROUTER_ADDRESS,
       tokenAmount,
       tokenIn
     );
-    console.log(`[TCH4NG-BOT] Token approval success:`);
+    console.log(`[TB-BOT] Token approval success:`);
     console.log(`hash: ${transactionReceipt?.hash}`);
   } catch (e) {
-    console.log(`[TCH4NG-BOT] Error while approving token:`);
+    console.log(`[TB-BOT] Error while approving token:`);
     console.log(e);
   }
 
@@ -198,7 +198,7 @@ export default async function buyMarket(
   // swap
   try {
     const ok = await yesno({
-      question: `\n| [TCH4NG-BOT] YOU WILL:\n|\n|    - BUY ${baseAmount.toFixed(
+      question: `\n| [TB-BOT] YOU WILL:\n|\n|    - BUY ${baseAmount.toFixed(
         6
       )} ${baseToken.symbol}\n|\n|    - FOR ${quoteAmount} ${
         quoteCurrency.symbol
@@ -207,12 +207,12 @@ export default async function buyMarket(
       }\n|\n| VALIDATE ? Type yes or no then press enter\n`,
     });
     if (!ok) {
-      console.log(`[TCH4NG-BOT] Transaction canceled`);
+      console.log(`[TB-BOT] Transaction canceled`);
       return;
     }
     const swapResponse = await wallet.sendTransaction(ethSwapTransaction);
     console.log(
-      `\n| [TCH4NG-BOT] SUCCESS! BUY RECAP:\n|\n|    - BOUGHT ${baseAmount.toFixed(
+      `\n| [TB-BOT] SUCCESS! BUY RECAP:\n|\n|    - BOUGHT ${baseAmount.toFixed(
         6
       )} ${baseToken.symbol}\n|\n|    - FOR ${quoteAmount} ${
         quoteCurrency.symbol
@@ -221,7 +221,7 @@ export default async function buyMarket(
       }\n|\n|    - HASH: ${swapResponse.hash}`
     );
   } catch (e) {
-    console.log(`[TCH4NG-BOT] Swap failed:`);
+    console.log(`[TB-BOT] Swap failed:`);
     console.log(e);
   }
 }

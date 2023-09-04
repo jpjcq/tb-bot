@@ -10,8 +10,8 @@ export default async function setPrivateKey(privateKey: string) {
     const botconfigStr = JSON.stringify(botconfigObj, null, 2);
     await writeFile("botconfig.json", botconfigStr, "utf-8");
 
-    console.log(`[TCH4NG-BOT] Success! Private key set to ${privateKey}`);
+    console.log(`[TB-BOT] Success! Private key set to ${privateKey}`);
   } catch (e) {
-    console.log(`[TCH4NG-BOT] Error while updating botconfig.json file: ${e}`);
+    console.log(`[TB-BOT] Error while updating botconfig.json file: ${e}`);
   }
 }

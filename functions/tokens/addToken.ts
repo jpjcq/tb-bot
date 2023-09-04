@@ -35,16 +35,16 @@ export default async function addToken(address: string) {
   } catch (e) {
     if ((e as EthersError).code === "BAD_DATA") {
       console.log(
-        `[TCH4NG-BOT] Error while fetching token infos, please verify the address you provided and/or the chain the bot is configured on. (it has to be the chain corresponding the token)`
+        `[TB-BOT] Error while fetching token infos, please verify the address you provided and/or the chain the bot is configured on. (it has to be the chain corresponding the token)`
       );
       return;
     } else if ((e as EthersError).code === "INVALID_ARGUMENT") {
       console.log(
-        "[TCH4NG-BOT] The address does not appear to be a valid ERC-20 token."
+        "[TB-BOT] The address does not appear to be a valid ERC-20 token."
       );
       return;
     } else {
-      console.log("[TCH4NG-BOT] Error while fetching token infos:");
+      console.log("[TB-BOT] Error while fetching token infos:");
       console.log(e);
       return;
     }
@@ -57,9 +57,9 @@ export default async function addToken(address: string) {
       path.resolve(__dirname, "../../tokens.json"),
       newTokensJson
     );
-    console.log(`[TCH4NG-BOT] Success! Token ${symbol} added`);
+    console.log(`[TB-BOT] Success! Token ${symbol} added`);
   } catch (e) {
-    console.log(`[TCH4NG-BOT] Error while writing tokens.json file:`);
+    console.log(`[TB-BOT] Error while writing tokens.json file:`);
     console.log(e);
   }
 }
