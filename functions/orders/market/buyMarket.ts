@@ -57,9 +57,7 @@ export default async function buyMarket(
 
   const { MAX_FEE_PER_GAS, MAX_PRIORITY_FEE_PER_GAS } = getGasFees();
 
-  let feeAmount = botconfig.swapOptions.feeAmount;
-
-  if (feeAmountInput) feeAmount = feeAmountInput;
+  let feeAmount = feeAmountInput ?? botconfig.swapOptions.defaultFeeAmount;
 
   // get pool address
   const currentPoolAddress = computePoolAddress({
@@ -116,8 +114,8 @@ export default async function buyMarket(
   const { calldata: quoteCalldata } = SwapQuoter.quoteCallParameters(
     swapRoute,
     CurrencyAmount.fromRawAmount(
-      quoteCurrency,
-      parseUnits(tokenAmount.toString(), quoteCurrency.decimals).toString()
+      tokenIn,
+      parseUnits(tokenAmount.toString(), tokenIn.decimals).toString()
     ),
     TradeType.EXACT_INPUT
   );

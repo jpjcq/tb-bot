@@ -49,11 +49,13 @@ import getBaseAndQuote from "../../getBaseAndQuote";
       if (
         !orderbook[pairAddress] ||
         (!orderbook[pairAddress].BUY && !orderbook[pairAddress].SELL) ||
-        (Object.keys(orderbook[pairAddress].BUY).length === 0 &&
+        (orderbook[pairAddress].BUY &&
+          Object.keys(orderbook[pairAddress].BUY).length === 0) ||
+        (orderbook[pairAddress].SELL &&
           Object.keys(orderbook[pairAddress].SELL).length === 0)
       ) {
         console.log(
-          `[TB-BOT] No order has been found for the pair ${pairAddress}. Closing process ${pairAddress}`
+          `[TB-BOT] No order has been found for the pair ${pairAddress}. Closing process`
         );
 
         // No order found, closing process
@@ -88,10 +90,8 @@ import getBaseAndQuote from "../../getBaseAndQuote";
         throw new Error("Division by zero");
       }
 
-      // Calcul du prix en "wei" (ou dans l'unité la plus petite)
       const priceBigInt = (quoteAmount * BigInt(10 ** 18)) / baseAmount;
 
-      // Conversion en "ether" (ou dans une unité plus grande)
       const price = Number(formatUnits(priceBigInt, quoteCurrency.decimals));
 
       console.log(`[TB-BOT] New price: ${price}`);
@@ -137,12 +137,14 @@ import getBaseAndQuote from "../../getBaseAndQuote";
               }
             } catch (e) {
               console.log(
-                `[TB-BOT] Order ${orderId} failed to pass at ${price}. (buy @ ${order.price})`
+                `[TB-BOT] Order ${orderId}[buy@${order.price}] failed to pass at ${price}`
               );
+              console.log(`[TB-BOT] Error:`);
+              console.log(e);
             }
           } else {
             console.log(
-              `[TB-BOT] Order ${orderId} failed to pass at ${price}. Re trying at next price.`
+              `[TB-BOT] Order ${orderId}[buy@${order.price}] failed to pass at ${price}`
             );
           }
         });
@@ -189,12 +191,14 @@ import getBaseAndQuote from "../../getBaseAndQuote";
               }
             } catch (e) {
               console.log(
-                `[TB-BOT] Order ${orderId} failed to pass at ${price}. (sell @ ${order.price})`
+                `[TB-BOT] Order ${orderId}[sell@${order.price}] failed to pass at ${price}`
               );
+              console.log(`[TB-BOT] Error:`);
+              console.log(e);
             }
           } else {
             console.log(
-              `[TB-BOT] Order ${orderId} failed to pass at ${price}. Re trying at next price.`
+              `[TB-BOT] Order ${orderId}[sell@${order.price}] failed to pass at ${price}`
             );
           }
         });

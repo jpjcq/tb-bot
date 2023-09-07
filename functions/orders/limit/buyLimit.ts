@@ -22,13 +22,15 @@ export default async function buyLimit(
   const wallet = botconfig.accountAddress;
   const orderbook = orderbookFile as OrderbookType;
 
+  let feeAmount = feeAmountInput ?? botconfig.swapOptions.defaultFeeAmount;
+
   const token1Symbol = token1SymbolInput.toLocaleUpperCase();
   const token2Symbol = token2SymbolInput.toLocaleUpperCase();
 
   const token1 = getTokenFromSymbol(token1Symbol)!;
   const token2 = getTokenFromSymbol(token2Symbol)!;
 
-  const pairAddress = getPairFromSymbols(token1Symbol, token2Symbol);
+  const pairAddress = getPairFromSymbols(token1Symbol, token2Symbol, feeAmount);
 
   const { baseToken, quoteCurrency } = getBaseAndQuote(token1, token2);
 
@@ -72,7 +74,7 @@ export default async function buyLimit(
     tokenOut: baseToken.symbol ?? "empty",
     tokenAmount: Number(tokenAmount),
     price: Number(price),
-    feeAmountInput: Number(feeAmountInput),
+    feeAmountInput: Number(feeAmount),
   };
 
   pairOrderbook.BUY[

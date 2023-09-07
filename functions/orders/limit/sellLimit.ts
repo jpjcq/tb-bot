@@ -24,18 +24,20 @@ export default async function sellLimit(
   const wallet = botconfig.accountAddress;
   const orderbook = orderbookFile as OrderbookType;
 
+  let feeAmount = feeAmountInput ?? botconfig.swapOptions.defaultFeeAmount;
+
   const token1Symbol = token1SymbolInput.toLocaleUpperCase();
   const token2Symbol = token2SymbolInput.toLocaleUpperCase();
 
   const token1 = getTokenFromSymbol(token1Symbol)!;
   const token2 = getTokenFromSymbol(token2Symbol)!;
 
-  const pairAddress = getPairFromSymbols(token1Symbol, token2Symbol);
+  const pairAddress = getPairFromSymbols(token1Symbol, token2Symbol, feeAmount);
 
   const { baseToken, quoteCurrency } = getBaseAndQuote(token1, token2);
 
   // sell: brings base to get quote
-  const tokenIn = quoteCurrency;
+  const tokenIn = baseToken;
 
   // Checking tokenIn balance
   const tokenInBalance = await Erc20__factory.connect(
@@ -97,29 +99,6 @@ export default async function sellLimit(
     console.log(e);
   }
 
-  // // start a new process only if a process for this pair isn't already running
-  // pm2.connect(function (err) {
-  //   if (err) {
-  //     console.log(err);
-  //     process.exit(2);
-  //   }
-
-  //   pm2.list(function (err, list) {
-  //     if (err) {
-  //       console.error(err);
-  //       return pm2.disconnect();
-  //     }
-
-  //     list.forEach((proc) => {
-  //       if (proc.name === pairAddress) {
-  //         pm2.disconnect();
-  //         return;
-  //       }
-  //     });
-  //   });
-
-  //   startTradingProcess(pairAddress);
-
-  //   pm2.disconnect();
-  // });
+  // start a new process only if a process for this pair isn't already running
+  startTradingProcess(pairAddress);
 }

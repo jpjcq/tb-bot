@@ -3,7 +3,7 @@ export interface Order {
   tokenOut: string;
   tokenAmount: number;
   price: number;
-  feeAmount?: number;
+  defaultFeeAmount?: number;
 }
 
 export interface BuySellOrders {
@@ -13,10 +13,6 @@ export interface BuySellOrders {
 export interface PairOrderbook {
   [key: string]: BuySellOrders;
 }
-
-// export interface ChainOrderbook {
-//   [key: string]: PairOrderbook;
-// }
 
 export interface OrderbookType {
   [key: string]: PairOrderbook;

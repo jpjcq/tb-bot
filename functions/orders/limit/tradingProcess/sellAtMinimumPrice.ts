@@ -1,6 +1,5 @@
 import { parseUnits, AbiCoder, Wallet, formatUnits } from "ethers";
 import JSBI from "jsbi";
-import yesno from "yesno";
 import {
   Pool,
   Route,
@@ -58,7 +57,7 @@ export default async function sellAtMinimumPrice(
 
   const { MAX_FEE_PER_GAS, MAX_PRIORITY_FEE_PER_GAS } = getGasFees();
 
-  let feeAmount = feeAmountInput ?? botconfig.swapOptions.feeAmount;
+  let feeAmount = feeAmountInput ?? botconfig.swapOptions.defaultFeeAmount;
 
   // get pool address
   const currentPoolAddress = computePoolAddress({
@@ -162,16 +161,19 @@ export default async function sellAtMinimumPrice(
 
   const price =
     parseFloat(
-      formatUnits(decodedQuoteResponse.toString(), quoteCurrency.decimals)
+      formatUnits(decodedQuoteResponse.toString(), tokenOut.decimals)
     ) / tokenAmount;
 
-  if (price < priceInput) {
-    console.log(
+  const tolerance = 0.005;
+
+  const toleredPrice = price * (1 - tolerance);
+
+  if (toleredPrice < priceInput) {
+    throw new Error(
       `[TB-BOT] Aborting. Price was not met.\nPrice wanted: ${priceInput} | Actual price: ${price.toFixed(
         6
       )}`
     );
-    return;
   }
   // approve
   try {
@@ -198,18 +200,17 @@ export default async function sellAtMinimumPrice(
     maxPriorityFeePerGas: MAX_PRIORITY_FEE_PER_GAS,
   };
 
-  const baseAmount = tokenAmount;
-  const quoteAmount = Number(formatUnits(decodedQuoteResponse.toString()));
+  const tokenOutAmount = Number(formatUnits(decodedQuoteResponse.toString()));
 
   // swap
   try {
     const swapResponse = await wallet.sendTransaction(ethSwapTransaction);
     const transactionReceipt = await swapResponse.wait();
     console.log(
-      `\n| [TB-BOT] SUCCESS! SELL RECAP:\n|\n|    - SOLD ${baseAmount} ${
-        baseToken.symbol
-      }\n|\n|    - FOR ${quoteAmount.toFixed(6)} ${
-        quoteCurrency.symbol
+      `\n| [TB-BOT] SUCCESS! SELL RECAP:\n|\n|    - SOLD ${tokenAmount} ${
+        tokenIn.symbol
+      }\n|\n|    - FOR ${tokenOutAmount.toFixed(6)} ${
+        tokenOut.symbol
       }\n|\n|    - PRICE ${price.toFixed(6)} ${baseToken.symbol}/${
         quoteCurrency.symbol
       }\n|\n|    - HASH: ${transactionReceipt?.hash}

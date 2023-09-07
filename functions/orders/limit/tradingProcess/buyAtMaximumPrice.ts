@@ -57,7 +57,7 @@ export default async function buyAtMaximumPrice(
 
   const { MAX_FEE_PER_GAS, MAX_PRIORITY_FEE_PER_GAS } = getGasFees();
 
-  let feeAmount = feeAmountInput ?? botconfig.swapOptions.feeAmount;
+  let feeAmount = feeAmountInput ?? botconfig.swapOptions.defaultFeeAmount;
 
   // get pool address
   const currentPoolAddress = computePoolAddress({
@@ -148,8 +148,8 @@ export default async function buyAtMaximumPrice(
 
   // swap options
   const options: SwapOptions = {
-    slippageTolerance: new Percent(50, 10_000), // 50 bips, or 0.50%
-    deadline: Math.floor(Date.now() / 1000) + 60 * 20, // 20 minutes from the current Unix time
+    slippageTolerance: new Percent(50, 10_000),
+    deadline: Math.floor(Date.now() / 1000) + 60 * 20,
     recipient: ACCOUNT_ADDRESS,
   };
 
@@ -159,13 +159,17 @@ export default async function buyAtMaximumPrice(
     options
   );
 
+  // Tolerance between Uniswap v3 Quoter price and last swap price
+  const tolerance = 0.005;
+
   const price =
-    tokenAmount /
     parseFloat(
       formatUnits(decodedQuoteResponse.toString(), quoteCurrency.decimals)
-    );
+    ) / tokenAmount;
 
-  if (price > priceInput) {
+  const toleredPrice = price * (1 + tolerance);
+
+  if (toleredPrice > priceInput) {
     console.log(
       `[TB-BOT] Aborting. Price was not met.\nPrice wanted: ${priceInput} | Actual price: ${price.toFixed(
         6

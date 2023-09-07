@@ -56,16 +56,14 @@ export default async function sellMarket(
   const wallet = new Wallet(PRIVATE_KEY).connect(provider);
 
   const { MAX_FEE_PER_GAS, MAX_PRIORITY_FEE_PER_GAS } = getGasFees();
-
-  let feeAmount = botconfig.swapOptions.feeAmount;
-
-  if (feeAmountInput) feeAmount = feeAmountInput;
+  
+  let feeAmount = feeAmountInput ?? botconfig.swapOptions.defaultFeeAmount;
 
   // get pool address
   const currentPoolAddress = computePoolAddress({
     factoryAddress: uniswapContracts.ethereum.UNISWAP_V3_FACTORY_ADDRESS,
-    tokenA: token1, //in
-    tokenB: token2, //out
+    tokenA: token1,
+    tokenB: token2,
     fee: feeAmount,
   });
 
@@ -116,8 +114,8 @@ export default async function sellMarket(
   const { calldata: quoteCalldata } = SwapQuoter.quoteCallParameters(
     swapRoute,
     CurrencyAmount.fromRawAmount(
-      quoteCurrency,
-      parseUnits(tokenAmount.toString(), quoteCurrency.decimals).toString()
+      tokenIn,
+      parseUnits(tokenAmount.toString(), tokenIn.decimals).toString()
     ),
     TradeType.EXACT_INPUT
   );
@@ -190,16 +188,15 @@ export default async function sellMarket(
       formatUnits(decodedQuoteResponse.toString(), tokenOut.decimals)
     ) / tokenAmount;
 
-  const baseAmount = tokenAmount;
   const quoteAmount = Number(formatUnits(decodedQuoteResponse.toString()));
 
   // swap
   try {
     const ok = await yesno({
-      question: `\n| [TB-BOT] YOU WILL:\n|\n|    - SELL ${baseAmount} ${
-        baseToken.symbol
-      }\n|\n|    - FOR ${quoteAmount} ${
-        quoteCurrency.symbol
+      question: `\n| [TB-BOT] YOU WILL:\n|\n|    - SELL ${tokenAmount} ${
+        tokenIn.symbol
+      }\n|\n|    - FOR ${quoteAmount.toFixed(6)} ${
+        tokenOut.symbol
       }\n|\n|    - PRICE ${price.toFixed(6)} ${baseToken.symbol}/${
         quoteCurrency.symbol
       }\n|\n| VALIDATE ? Type yes or no then press enter\n`,
@@ -210,10 +207,10 @@ export default async function sellMarket(
     }
     const swapResponse = await wallet.sendTransaction(ethSwapTransaction);
     console.log(
-      `\n| [TB-BOT] SUCCESS! SELL RECAP:\n|\n|    - SOLD ${baseAmount} ${
-        baseToken.symbol
+      `\n| [TB-BOT] SUCCESS! SELL RECAP:\n|\n|    - SOLD ${tokenAmount} ${
+        tokenIn.symbol
       }\n|\n|    - FOR ${quoteAmount.toFixed(6)} ${
-        quoteCurrency.symbol
+        tokenOut.symbol
       }\n|\n|    - PRICE ${price.toFixed(6)} ${baseToken.symbol}/${
         quoteCurrency.symbol
       }\n|\n|    - HASH: ${swapResponse.hash}`

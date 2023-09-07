@@ -39,9 +39,7 @@ export default async function swapFromTokenAddresses(
   const tokenIn = await getTokenInstance(tokenInAddress);
   const tokenOut = await getTokenInstance(tokenOutAddress);
 
-  let feeAmount = botconfig.swapOptions.feeAmount;
-
-  if (feeAmountInput) feeAmount = feeAmountInput;
+  let feeAmount = feeAmountInput ?? botconfig.swapOptions.defaultFeeAmount;
 
   // get pool address
   const currentPoolAddress = computePoolAddress({

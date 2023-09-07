@@ -5,12 +5,13 @@ import botconfig from "../botconfig.json";
 
 export default async function getPairFromAddresses(
   address1: string,
-  address2: string
+  address2: string,
+  feeAmountInput?: number
 ) {
   const token1 = await getTokenInstance(address1);
   const token2 = await getTokenInstance(address2);
 
-  let feeAmount = botconfig.swapOptions.feeAmount;
+  let feeAmount = feeAmountInput ?? botconfig.swapOptions.defaultFeeAmount;
 
   // get pool address
   const pairAddress = computePoolAddress({

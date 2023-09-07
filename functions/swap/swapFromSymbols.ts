@@ -50,9 +50,7 @@ export default async function swapFromSymbols(
 
   const { MAX_FEE_PER_GAS, MAX_PRIORITY_FEE_PER_GAS } = getGasFees();
 
-  let feeAmount = botconfig.swapOptions.feeAmount;
-
-  if (feeAmountInput) feeAmount = feeAmountInput;
+  let feeAmount = feeAmountInput ?? botconfig.swapOptions.defaultFeeAmount;
 
   // get pool address
   const currentPoolAddress = computePoolAddress({

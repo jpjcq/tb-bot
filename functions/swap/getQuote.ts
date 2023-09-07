@@ -27,7 +27,7 @@ export default async function getQuote(
 ): Promise<number> {
   const provider = getProvider();
 
-  let feeAmount = botconfig.swapOptions.feeAmount;
+  let feeAmount = botconfig.swapOptions.defaultFeeAmount;
 
   if (feeAmountInput) feeAmount = feeAmountInput;
 
