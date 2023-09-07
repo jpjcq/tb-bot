@@ -51,7 +51,7 @@ export default async function swapFromSymbols(
 
   const wallet = new Wallet(PRIVATE_KEY).connect(provider);
 
-  let feeAmount = 3000;
+  let feeAmount = botconfig.swapOptions.feeAmount;
 
   if (feeAmountInput) feeAmount = feeAmountInput;
 

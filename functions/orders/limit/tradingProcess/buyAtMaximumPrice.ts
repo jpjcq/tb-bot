@@ -32,7 +32,7 @@ import { TokensType } from "../../../../types/tokenType";
 import getTokenFromSymbol from "../../../../utils/getTokenFromSymbol";
 import getBaseAndQuote from "../../getBaseAndQuote";
 
-export default async function buyAtMinimumPrice(
+export default async function buyAtMaximumPrice(
   token1SymbolInput: string,
   token2SymbolInput: string,
   tokenAmount: number,
@@ -51,22 +51,20 @@ export default async function buyAtMinimumPrice(
     return;
   }
 
-  const token1 = getTokenFromSymbol(token1Symbol)!;
-  const token2 = getTokenFromSymbol(token2Symbol)!;
+  const token1 = getTokenFromSymbol(token1Symbol);
+  const token2 = getTokenFromSymbol(token2Symbol);
 
   const provider = getProvider();
 
   const wallet = new Wallet(PRIVATE_KEY).connect(provider);
 
-  let feeAmount = 3000;
-
-  if (feeAmountInput) feeAmount = feeAmountInput;
+  let feeAmount = feeAmountInput ?? botconfig.swapOptions.feeAmount;
 
   // get pool address
   const currentPoolAddress = computePoolAddress({
     factoryAddress: uniswapContracts.ethereum.UNISWAP_V3_FACTORY_ADDRESS,
-    tokenA: token1, //in
-    tokenB: token2, //out
+    tokenA: token1,
+    tokenB: token2,
     fee: feeAmount,
   });
 
@@ -106,7 +104,7 @@ export default async function buyAtMinimumPrice(
         tokenIn.symbol
       } but you only have ${Number(
         formatUnits(tokenInBalance, tokenIn.decimals)
-      ).toFixed(6)} ${tokenIn.symbol}`
+      ).toFixed(6)} ${tokenIn.symbol}buytest`
     );
     return;
   }
@@ -117,8 +115,8 @@ export default async function buyAtMinimumPrice(
   const { calldata: quoteCalldata } = SwapQuoter.quoteCallParameters(
     swapRoute,
     CurrencyAmount.fromRawAmount(
-      quoteCurrency,
-      parseUnits(tokenAmount.toString(), quoteCurrency.decimals).toString()
+      tokenIn,
+      parseUnits(tokenAmount.toString(), tokenIn.decimals).toString()
     ),
     TradeType.EXACT_INPUT
   );
@@ -190,6 +188,7 @@ export default async function buyAtMinimumPrice(
   } catch (e) {
     console.log(`[TB-BOT] Error while approving token:`);
     console.log(e);
+    // throw new Error(`[TB-BOT] Aborting token approval.`);
   }
 
   const ethSwapTransaction = {
@@ -221,5 +220,6 @@ export default async function buyAtMinimumPrice(
   } catch (e) {
     console.log(`[TB-BOT] Swap failed:`);
     console.log(e);
+    // throw new Error(`[TB-BOT] Aborting swap.`);
   }
 }

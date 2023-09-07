@@ -58,7 +58,7 @@ export default async function sellMarket(
 
   const wallet = new Wallet(PRIVATE_KEY).connect(provider);
 
-  let feeAmount = 3000;
+  let feeAmount = botconfig.swapOptions.feeAmount;
 
   if (feeAmountInput) feeAmount = feeAmountInput;
 
@@ -188,7 +188,7 @@ export default async function sellMarket(
 
   const price =
     parseFloat(
-      formatUnits(decodedQuoteResponse.toString(), quoteCurrency.decimals)
+      formatUnits(decodedQuoteResponse.toString(), tokenOut.decimals)
     ) / tokenAmount;
 
   const baseAmount = tokenAmount;

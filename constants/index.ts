@@ -2,6 +2,7 @@ import { ethers } from "ethers";
 
 export const STABLECOINS = [
   "USD Coin",
+  "USD Coin (Arb1)",
   "Tether USD",
   "Dai Stablecoin",
   "TrueUSD",

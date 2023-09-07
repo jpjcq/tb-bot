@@ -62,7 +62,7 @@ export default async function sellLimit(
 
   if (tokenAmount > availableBalance) {
     console.log(
-      `[TB-BOT] Insufficient ${tokenIn.symbol} balance. You're trying to swap ${tokenAmount} ${tokenIn.symbol} but you only have ${availableBalance}`
+      `[TB-BOT] Insufficient ${tokenIn.symbol} balance. You're trying to swap ${tokenAmount} ${tokenIn.symbol} but you only have ${availableBalance} (${openOrdersAmount} ${tokenIn.symbol} in orderbook)`
     );
     return;
   }

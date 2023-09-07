@@ -9,7 +9,7 @@ import { STABLECOINS, SECONDARY_QUOTE_CURRENCIES } from "../constants";
  * ASYNC | Determine which of two tokens of a given pair address is base token and quote currency
  * @param {string} pairAddress uniswap address pair
  * @param {JsonRpcProvider} provider ethers provider
- * @returns {number} quoteToken = 0 | 1
+ * @returns {number} quoteToken = 0 | 1 | -1
  */
 export default async function getQuoteCurrency(
   pairAddress: string,
@@ -29,19 +29,28 @@ export default async function getQuoteCurrency(
   const token0Name = await token0Contract.name();
   const token1Name = await token1Contract.name();
 
-  if (
+  if (STABLECOINS.includes(token0Name) && STABLECOINS.includes(token1Name)) {
+    throw new Error(
+      `[TB-BOT] Both tokens are stablecoins, to swap stablecoins please use the tb swap command`
+    );
+  } else if (
     STABLECOINS.includes(token0Name) ||
-    SECONDARY_QUOTE_CURRENCIES.includes(token0Name)
+    STABLECOINS.includes(token1Name)
   ) {
-    return 0;
-  }
-
-  if (
-    STABLECOINS.includes(token1Name) ||
+    return STABLECOINS.includes(token0Name) ? 0 : 1;
+  } else if (
+    SECONDARY_QUOTE_CURRENCIES.includes(token0Name) ||
     SECONDARY_QUOTE_CURRENCIES.includes(token1Name)
   ) {
-    return 1;
+    return SECONDARY_QUOTE_CURRENCIES.includes(token0Name) ? 0 : 1;
+  } else if (
+    SECONDARY_QUOTE_CURRENCIES.includes(token0Name) &&
+    SECONDARY_QUOTE_CURRENCIES.includes(token1Name)
+  ) {
+    throw new Error(
+      `[TB-BOT] One of the two tokens must be a base token, to swap between secondary quote currencies (e.g. WETH), please use the tb swap command`
+    );
+  } else {
+    return -1;
   }
-
-  return -1;
 }

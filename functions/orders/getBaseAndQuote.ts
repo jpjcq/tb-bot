@@ -5,9 +5,9 @@ import { SECONDARY_QUOTE_CURRENCIES, STABLECOINS } from "../../constants";
  * Determine which token is base token and which is quote currency.
  * If both are stablecoins, it throws
  * If none of them is stablecoin or secondary quote currency, it throws
- * @param token1
- * @param token2
- * @returns
+ * @param token1 Token instance
+ * @param token2 Token instance
+ * @returns { baseToken: Token; quoteCurrency: Token }
  */
 export default function getBaseAndQuote(
   token1: Token,
@@ -46,7 +46,7 @@ export default function getBaseAndQuote(
     SECONDARY_QUOTE_CURRENCIES.includes(name2)
   ) {
     throw new Error(
-      `[TB-BOT] One of the two tokens must be a base token, to swap between quote currencies (e.g. WETH), please use the tb swap command`
+      `[TB-BOT] One of the two tokens must be a base token, to swap between secondary quote currencies (e.g. WETH), please use the tb swap command`
     );
   }
   // If none of the above conditions are met, throw

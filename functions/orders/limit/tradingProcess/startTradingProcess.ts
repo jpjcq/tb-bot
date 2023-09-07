@@ -43,8 +43,9 @@ export default function startTradingProcess(pairAddress: string) {
         console.log(
           `[TB-BOT] Trading process launched on pair: ${pairAddress}`
         );
+
+        pm2.disconnect();
       }
     );
-    pm2.disconnect();
   });
 }

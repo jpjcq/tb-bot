@@ -25,6 +25,7 @@ import getApproval from "./getApproval";
 import JSBI from "jsbi";
 import getTokenInstance from "./getTokenInstance";
 import yesno from "yesno";
+import botconfig from "../../botconfig.json";
 
 export default async function swapFromTokenAddresses(
   tokenInAddress: string,
@@ -39,7 +40,7 @@ export default async function swapFromTokenAddresses(
   const tokenIn = await getTokenInstance(tokenInAddress);
   const tokenOut = await getTokenInstance(tokenOutAddress);
 
-  let feeAmount = 3000;
+  let feeAmount = botconfig.swapOptions.feeAmount;
 
   if (feeAmountInput) feeAmount = feeAmountInput;
 

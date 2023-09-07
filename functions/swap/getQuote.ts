@@ -7,6 +7,7 @@ import {
 } from "../../types/ethers-contracts";
 import { formatUnits, parseUnits } from "ethers";
 import getProvider from "../../utils/getProvider";
+import botconfig from "../../botconfig.json";
 
 /**
  * Get a quote for a given swap by asking Uniswap V3: Quoter smart contract
@@ -26,9 +27,9 @@ export default async function getQuote(
 ): Promise<number> {
   const provider = getProvider();
 
-  let feeAmount = 3000; // Medium fee
+  let feeAmount = botconfig.swapOptions.feeAmount;
 
-  if(feeAmountInput) feeAmount = feeAmountInput;
+  if (feeAmountInput) feeAmount = feeAmountInput;
 
   const currentPoolAddress = computePoolAddress({
     factoryAddress: uniswapContracts.ethereum.UNISWAP_V3_FACTORY_ADDRESS,

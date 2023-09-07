@@ -26,7 +26,6 @@
   "dependencies": {
     "@uniswap/sdk-core": "^4.0.6",
     "@uniswap/v3-sdk": "^3.10.0",
-    "boxen": "^7.1.1",
     "commander": "^11.0.0",
     "ethers": "^6.7.1",
     "jsbi": "^3.1.4",

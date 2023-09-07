@@ -1,6 +1,3 @@
-import buyAtMinimumPrice from "./buyAtMinimumPrice";
-import sellAtMinimumPrice from "./sellAtMinimumPrice";
+import buyAtMaximumPrice from "./buyAtMaximumPrice";
 
-(async function () {
-  await sellAtMinimumPrice("UNI", "WETH", 0.01, 0.052);
-})();
+buyAtMaximumPrice("arb", "weth", 0.003, 0.00056);

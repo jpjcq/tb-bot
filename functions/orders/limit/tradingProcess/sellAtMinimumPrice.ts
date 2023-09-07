@@ -52,16 +52,14 @@ export default async function sellAtMinimumPrice(
     return;
   }
 
-  const token1 = getTokenFromSymbol(token1Symbol)!;
-  const token2 = getTokenFromSymbol(token2Symbol)!;
+  const token1 = getTokenFromSymbol(token1Symbol);
+  const token2 = getTokenFromSymbol(token2Symbol);
 
   const provider = getProvider();
 
   const wallet = new Wallet(PRIVATE_KEY).connect(provider);
 
-  let feeAmount = 3000;
-
-  if (feeAmountInput) feeAmount = feeAmountInput;
+  let feeAmount = feeAmountInput ?? botconfig.swapOptions.feeAmount;
 
   // get pool address
   const currentPoolAddress = computePoolAddress({
@@ -107,7 +105,7 @@ export default async function sellAtMinimumPrice(
         tokenIn.symbol
       } but you only have ${Number(
         formatUnits(tokenInBalance, tokenIn.decimals)
-      ).toFixed(6)} ${tokenIn.symbol}`
+      ).toFixed(6)} ${tokenIn.symbol}selltest`
     );
     return;
   }
@@ -118,8 +116,8 @@ export default async function sellAtMinimumPrice(
   const { calldata: quoteCalldata } = SwapQuoter.quoteCallParameters(
     swapRoute,
     CurrencyAmount.fromRawAmount(
-      quoteCurrency,
-      parseUnits(tokenAmount.toString(), quoteCurrency.decimals).toString()
+      tokenIn,
+      parseUnits(tokenAmount.toString(), tokenIn.decimals).toString()
     ),
     TradeType.EXACT_INPUT
   );
@@ -189,6 +187,7 @@ export default async function sellAtMinimumPrice(
   } catch (e) {
     console.log(`[TB-BOT] Error while approving token:`);
     console.log(e);
+    throw new Error(`[TB-BOT] Aborting token approval.`);
   }
 
   const ethSwapTransaction = {
@@ -220,5 +219,6 @@ export default async function sellAtMinimumPrice(
   } catch (e) {
     console.log(`[TB-BOT] Swap failed:`);
     console.log(e);
+    throw new Error(`[TB-BOT] Aborting swap.`);
   }
 }

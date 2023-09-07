@@ -1,6 +1,7 @@
 import { computePoolAddress } from "@uniswap/v3-sdk";
 import getTokenInstance from "../functions/swap/getTokenInstance";
 import { uniswapContracts } from "../constants";
+import botconfig from "../botconfig.json";
 
 export default async function getPairFromAddresses(
   address1: string,
@@ -9,7 +10,7 @@ export default async function getPairFromAddresses(
   const token1 = await getTokenInstance(address1);
   const token2 = await getTokenInstance(address2);
 
-  let feeAmount = 3000;
+  let feeAmount = botconfig.swapOptions.feeAmount;
 
   // get pool address
   const pairAddress = computePoolAddress({

@@ -5,12 +5,11 @@ import { Token } from "@uniswap/sdk-core";
 import { rpc } from "../constants";
 import { ChainKey } from "../constants/types";
 
-export default function getTokenFromSymbol(symbol: string) {
+export default function getTokenFromSymbol(symbol: string): Token {
   const tokens = tokensFile as TokensType;
 
   if (!(tokens as TokensType)[botconfig.chain][symbol]) {
-    console.log(`[TB_BOT] Token ${symbol} doesn't exist`);
-    return;
+    throw Error(`[TB_BOT] Token ${symbol} doesn't exist`);
   }
 
   const { address, decimals, name } = tokens[botconfig.chain][symbol];
