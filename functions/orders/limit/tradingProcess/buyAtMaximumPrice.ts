@@ -10,11 +10,7 @@ import {
   computePoolAddress,
 } from "@uniswap/v3-sdk";
 import { CurrencyAmount, Percent, TradeType } from "@uniswap/sdk-core";
-import {
-  MAX_FEE_PER_GAS,
-  MAX_PRIORITY_FEE_PER_GAS,
-  uniswapContracts,
-} from "../../../../constants";
+import { uniswapContracts } from "../../../../constants";
 import {
   privateKey as PRIVATE_KEY,
   accountAddress as ACCOUNT_ADDRESS,
@@ -31,6 +27,7 @@ import botconfig from "../../../../botconfig.json";
 import { TokensType } from "../../../../types/tokenType";
 import getTokenFromSymbol from "../../../../utils/getTokenFromSymbol";
 import getBaseAndQuote from "../../getBaseAndQuote";
+import getGasFees from "../../../../utils/getGasFees";
 
 export default async function buyAtMaximumPrice(
   token1SymbolInput: string,
@@ -57,6 +54,8 @@ export default async function buyAtMaximumPrice(
   const provider = getProvider();
 
   const wallet = new Wallet(PRIVATE_KEY).connect(provider);
+
+  const { MAX_FEE_PER_GAS, MAX_PRIORITY_FEE_PER_GAS } = getGasFees();
 
   let feeAmount = feeAmountInput ?? botconfig.swapOptions.feeAmount;
 
@@ -104,7 +103,7 @@ export default async function buyAtMaximumPrice(
         tokenIn.symbol
       } but you only have ${Number(
         formatUnits(tokenInBalance, tokenIn.decimals)
-      ).toFixed(6)} ${tokenIn.symbol}buytest`
+      ).toFixed(6)} ${tokenIn.symbol}`
     );
     return;
   }
@@ -188,7 +187,7 @@ export default async function buyAtMaximumPrice(
   } catch (e) {
     console.log(`[TB-BOT] Error while approving token:`);
     console.log(e);
-    // throw new Error(`[TB-BOT] Aborting token approval.`);
+    throw new Error(`[TB-BOT] Aborting token approval.`);
   }
 
   const ethSwapTransaction = {
@@ -220,6 +219,6 @@ export default async function buyAtMaximumPrice(
   } catch (e) {
     console.log(`[TB-BOT] Swap failed:`);
     console.log(e);
-    // throw new Error(`[TB-BOT] Aborting swap.`);
+    throw new Error(`[TB-BOT] Aborting swap.`);
   }
 }

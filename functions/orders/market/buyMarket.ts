@@ -11,11 +11,7 @@ import {
   computePoolAddress,
 } from "@uniswap/v3-sdk";
 import { CurrencyAmount, Percent, TradeType } from "@uniswap/sdk-core";
-import {
-  MAX_FEE_PER_GAS,
-  MAX_PRIORITY_FEE_PER_GAS,
-  uniswapContracts,
-} from "../../../constants";
+import { uniswapContracts } from "../../../constants";
 import {
   privateKey as PRIVATE_KEY,
   accountAddress as ACCOUNT_ADDRESS,
@@ -32,6 +28,7 @@ import botconfig from "../../../botconfig.json";
 import { TokensType } from "../../../types/tokenType";
 import getTokenFromSymbol from "../../../utils/getTokenFromSymbol";
 import getBaseAndQuote from "../getBaseAndQuote";
+import getGasFees from "../../../utils/getGasFees";
 
 export default async function buyMarket(
   token1SymbolInput: string,
@@ -57,6 +54,8 @@ export default async function buyMarket(
   const provider = getProvider();
 
   const wallet = new Wallet(PRIVATE_KEY).connect(provider);
+
+  const { MAX_FEE_PER_GAS, MAX_PRIORITY_FEE_PER_GAS } = getGasFees();
 
   let feeAmount = botconfig.swapOptions.feeAmount;
 
@@ -188,9 +187,7 @@ export default async function buyMarket(
 
   const price =
     tokenAmount /
-    parseFloat(
-      formatUnits(decodedQuoteResponse.toString(), tokenOut.decimals)
-    );
+    parseFloat(formatUnits(decodedQuoteResponse.toString(), tokenOut.decimals));
 
   const baseAmount = Number(formatUnits(decodedQuoteResponse.toString()));
   const quoteAmount = tokenAmount;
