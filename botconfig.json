@@ -7,5 +7,11 @@
     "arbitrum": "<PROVIDER_URL>",
     "goerliEthereum": "<PROVIDER_URL>",
     "goerliArbitrum": "<PROVIDER_URL>"
+  },
+  "swapOptions": {
+    "tolerance": 0.05,
+    "defaultFeeAmount": 500,
+    "slippage": 0.5,
+    "deadline": 20
   }
 }
