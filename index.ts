@@ -21,6 +21,12 @@ import removeOrder from "./functions/orders/limit/removeOrder";
 import buyMarket from "./functions/orders/market/buyMarket";
 import sellMarket from "./functions/orders/market/sellMarket";
 import sellLimit from "./functions/orders/limit/sellLimit";
+import setTolerance from "./functions/botconfig/set/setTolerance";
+import getTolerance from "./functions/botconfig/get/getTolerance";
+import getSlippage from "./functions/botconfig/get/getSlippage";
+import getDeadline from "./functions/botconfig/get/getDeadline";
+import setSlippage from "./functions/botconfig/set/setSlippage";
+import setDeadline from "./functions/botconfig/set/setDeadline";
 
 program.name("tb-bot").version("1.0.0").description("Crypto utilities bot");
 
@@ -115,7 +121,7 @@ program.command("removeorder <orderId>").action(function (orderId) {
   removeOrder(orderId);
 });
 
-// Botconfig functions
+// Botconfig functions: general
 program.command("setchain <chain>").action(function (chain) {
   setChain(chain);
 });
@@ -142,6 +148,31 @@ program.command("getaccount").action(function () {
 
 program.command("getprivatekey").action(function () {
   getPrivateKey();
+});
+
+// botconfig functions: swap options
+program.command("settolerance <tolerance>").action(function (tolerance) {
+  setTolerance(tolerance);
+});
+
+program.command("gettolerance").action(function () {
+  getTolerance();
+});
+
+program.command("setslippage <slippage>").action(function (slippage) {
+  setSlippage(slippage);
+});
+
+program.command("getslippage").action(function () {
+  getSlippage();
+});
+
+program.command("setdeadline <deadline>").action(function (deadline) {
+  setDeadline(deadline);
+});
+
+program.command("getdeadline").action(function () {
+  getDeadline();
 });
 
 // Utils functions

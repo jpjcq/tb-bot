@@ -146,10 +146,13 @@ export default async function buyAtMaximumPrice(
     tradeType: TradeType.EXACT_INPUT,
   });
 
+  const slippage = botconfig.swapOptions.slippage * 100;
+
   // swap options
   const options: SwapOptions = {
-    slippageTolerance: new Percent(50, 10_000),
-    deadline: Math.floor(Date.now() / 1000) + 60 * 20,
+    slippageTolerance: new Percent(slippage, 10_000), // in bips: 50 bips = 0.50%
+    deadline:
+      Math.floor(Date.now() / 1000) + 60 * botconfig.swapOptions.deadline, // in minutes
     recipient: ACCOUNT_ADDRESS,
   };
 
@@ -160,7 +163,7 @@ export default async function buyAtMaximumPrice(
   );
 
   // Tolerance between Uniswap v3 Quoter price and last swap price
-  const tolerance = 0.005;
+  const tolerance = botconfig.swapOptions.tolerance / 100;
 
   const price =
     parseFloat(

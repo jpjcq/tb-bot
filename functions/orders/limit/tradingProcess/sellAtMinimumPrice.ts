@@ -146,10 +146,13 @@ export default async function sellAtMinimumPrice(
     tradeType: TradeType.EXACT_INPUT,
   });
 
+  const slippage = botconfig.swapOptions.slippage * 100;
+
   // swap options
   const options: SwapOptions = {
-    slippageTolerance: new Percent(50, 10_000), // 50 bips, or 0.50%
-    deadline: Math.floor(Date.now() / 1000) + 60 * 20, // 20 minutes from the current Unix time
+    slippageTolerance: new Percent(slippage, 10_000), // in bips: 50 bips = 0.50%
+    deadline:
+      Math.floor(Date.now() / 1000) + 60 * botconfig.swapOptions.deadline, // in minutes
     recipient: ACCOUNT_ADDRESS,
   };
 
@@ -164,7 +167,8 @@ export default async function sellAtMinimumPrice(
       formatUnits(decodedQuoteResponse.toString(), tokenOut.decimals)
     ) / tokenAmount;
 
-  const tolerance = 0.005;
+  // Tolerance between Uniswap v3 Quoter price and last swap price
+  const tolerance = botconfig.swapOptions.tolerance / 100;
 
   const toleredPrice = price * (1 - tolerance);
 

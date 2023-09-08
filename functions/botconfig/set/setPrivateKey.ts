@@ -1,13 +1,12 @@
-import { readFile, writeFile } from "fs/promises";
+import { writeFile } from "fs/promises";
+import botconfig from "../../../botconfig.json";
 
 export default async function setPrivateKey(privateKey: string) {
+  botconfig.privateKey = privateKey;
+
+  const botconfigStr = JSON.stringify(botconfig, null, 2);
+
   try {
-    const data = await readFile("botconfig.json", "utf-8");
-    const botconfigObj = JSON.parse(data);
-
-    botconfigObj.privateKey = privateKey;
-
-    const botconfigStr = JSON.stringify(botconfigObj, null, 2);
     await writeFile("botconfig.json", botconfigStr, "utf-8");
 
     console.log(`[TB-BOT] Success! Private key set to ${privateKey}`);

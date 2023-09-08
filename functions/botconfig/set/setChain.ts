@@ -11,21 +11,22 @@ export default async function setChain(chain: string) {
   }
 
   if (availableChains.includes(chain)) {
+    botconfig.chain = chain;
+
+    const botconfigStr = JSON.stringify(botconfig, null, 2);
+
     try {
-      const botconfigObj = botconfig;
-
-      botconfigObj.chain = chain;
-
-      const botconfigStr = JSON.stringify(botconfigObj, null, 2);
-      await writeFile(path.resolve(__dirname, "../../../botconfig.json"), botconfigStr, "utf-8");
+      await writeFile(
+        path.resolve(__dirname, "../../../botconfig.json"),
+        botconfigStr,
+        "utf-8"
+      );
 
       console.log(
         `[TB-BOT] Success! Chain set to ${chain.toLocaleUpperCase()}`
       );
     } catch (e) {
-      console.log(
-        `[TB-BOT] Error while updating botconfig.json file: ${e}`
-      );
+      console.log(`[TB-BOT] Error while updating botconfig.json file: ${e}`);
     }
   } else {
     console.error(

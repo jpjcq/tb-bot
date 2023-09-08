@@ -2,10 +2,12 @@ import { writeFile } from "fs/promises";
 import path from "path";
 import botconfig from "../../../botconfig.json";
 
-export default async function setAccountAddress(accountAddress: string) {
-  botconfig.accountAddress = accountAddress;
+export default async function setTolerance(tolerance: string) {
+  const botconfigObj = botconfig;
 
-  const botconfigStr = JSON.stringify(botconfig, null, 2);
+  botconfigObj.swapOptions.tolerance = Number(tolerance);
+
+  const botconfigStr = JSON.stringify(botconfigObj, null, 2);
 
   try {
     await writeFile(
@@ -13,8 +15,7 @@ export default async function setAccountAddress(accountAddress: string) {
       botconfigStr,
       "utf-8"
     );
-
-    console.log(`[TB-BOT] Success! Account address set to ${accountAddress}`);
+    console.log(`[TB-BOT] Success! Tolerance set to ${Number(tolerance)}`);
   } catch (e) {
     console.log(`[TB-BOT] Error while updating botconfig.json file:`);
     console.log(e);
