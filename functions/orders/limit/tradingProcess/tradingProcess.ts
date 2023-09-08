@@ -6,7 +6,7 @@ import { UniswapV3Pool__factory } from "../../../../types/ethers-contracts";
 import { OrderbookType } from "../../../../types/orderbookTypes";
 import getProvider from "../../../../utils/getProvider";
 import getQuoteCurrency from "../../../../utils/getQuoteCurrency";
-import orderbookFile from "../orderbook.json";
+import orderbookFile from "../../../../orderbook.json";
 import buyAtMaximumPrice from "./buyAtMaximumPrice";
 import sellAtMinimumPrice from "./sellAtMinimumPrice";
 import getAbs from "../../../../utils/getAbs";
@@ -124,7 +124,7 @@ import getBaseAndQuote from "../../getBaseAndQuote";
 
               try {
                 await writeFile(
-                  path.resolve(__dirname, "../orderbook.json"),
+                  path.resolve(__dirname, "../../../../orderbook.json"),
                   orderbookJson
                 );
                 console.log(`[TB-BOT] Buy order successfully removed:`);
@@ -178,7 +178,7 @@ import getBaseAndQuote from "../../getBaseAndQuote";
 
               try {
                 await writeFile(
-                  path.resolve(__dirname, "../orderbook.json"),
+                  path.resolve(__dirname, "../../../../orderbook.json"),
                   orderbookJson
                 );
                 console.log(`[TB-BOT] Sell order successfully removed:`);

@@ -1,7 +1,7 @@
 import { formatUnits } from "ethers";
 import { writeFile } from "fs/promises";
 import path from "path";
-import orderbookFile from "./orderbook.json";
+import orderbookFile from "../../../orderbook.json";
 import botconfig from "../../../botconfig.json";
 import { OrderbookType } from "../../../types/orderbookTypes";
 import getPairFromSymbols from "../../../utils/getPairFromSymbols";
@@ -86,7 +86,7 @@ export default async function buyLimit(
   const orderbookJson = JSON.stringify(orderbook, null, 2);
 
   try {
-    await writeFile(path.resolve(__dirname, "./orderbook.json"), orderbookJson);
+    await writeFile(path.resolve(__dirname, "../../../orderbook.json"), orderbookJson);
     console.log(`[TB-BOT] Buy order successfully added:`);
     console.log(buyOrder);
   } catch (e) {

@@ -170,7 +170,7 @@ export default async function sellAtMinimumPrice(
   // Tolerance between Uniswap v3 Quoter price and last swap price
   const tolerance = botconfig.swapOptions.tolerance / 100;
 
-  const toleredPrice = price * (1 - tolerance);
+  const toleredPrice = price * (1 + tolerance);
 
   if (toleredPrice < priceInput) {
     throw new Error(
@@ -179,6 +179,7 @@ export default async function sellAtMinimumPrice(
       )}`
     );
   }
+
   // approve
   try {
     console.log(`[TB-BOT] Sending token approval transation..`);

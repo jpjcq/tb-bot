@@ -170,7 +170,7 @@ export default async function buyAtMaximumPrice(
       formatUnits(decodedQuoteResponse.toString(), quoteCurrency.decimals)
     ) / tokenAmount;
 
-  const toleredPrice = price * (1 + tolerance);
+  const toleredPrice = price * (1 - tolerance);
 
   if (toleredPrice > priceInput) {
     console.log(

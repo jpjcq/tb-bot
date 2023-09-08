@@ -1,17 +1,15 @@
-import orderbookFile from "./orderbook.json";
-import botconfig from "../../../botconfig.json";
-import { ChainKey } from "../../../constants/types";
-import { OrderbookType } from "../../../types/orderbookTypes";
+import { formatUnits } from "ethers";
 import { writeFile } from "fs/promises";
 import path from "path";
-import pm2 from "pm2";
+import orderbookFile from "../../../orderbook.json";
+import botconfig from "../../../botconfig.json";
+import { OrderbookType } from "../../../types/orderbookTypes";
 import getPairFromSymbols from "../../../utils/getPairFromSymbols";
 import startTradingProcess from "./tradingProcess/startTradingProcess";
 import getBaseAndQuote from "../getBaseAndQuote";
 import getTokenFromSymbol from "../../../utils/getTokenFromSymbol";
 import { Erc20__factory } from "../../../types/ethers-contracts";
 import getProvider from "../../../utils/getProvider";
-import { formatUnits } from "ethers";
 
 export default async function sellLimit(
   token1SymbolInput: string,
@@ -91,7 +89,10 @@ export default async function sellLimit(
   const orderbookJson = JSON.stringify(orderbook, null, 2);
 
   try {
-    await writeFile(path.resolve(__dirname, "./orderbook.json"), orderbookJson);
+    await writeFile(
+      path.resolve(__dirname, "../../../orderbook.json"),
+      orderbookJson
+    );
     console.log(`[TB-BOT] Sell order successfully added:`);
     console.log(sellOrder);
   } catch (e) {

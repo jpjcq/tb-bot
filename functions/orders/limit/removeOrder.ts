@@ -1,5 +1,5 @@
 import { PairOrderbook, OrderbookType } from "../../../types/orderbookTypes";
-import orderbookFile from "./orderbook.json";
+import orderbookFile from "../../../orderbook.json";
 import botconfig from "../../../botconfig.json";
 import { ChainKey } from "../../../constants/types";
 import { writeFile } from "fs/promises";
@@ -35,7 +35,7 @@ export default async function removeOrder(orderId: string) {
 
   try {
     const orderbookJson = JSON.stringify(orderbook, null, 2);
-    await writeFile(path.resolve(__dirname, "./orderbook.json"), orderbookJson);
+    await writeFile(path.resolve(__dirname, "../../../orderbook.json"), orderbookJson);
     console.log(`[TB-BOT] Success! Order ${orderId} removed:`);
     console.log(orderToDelete);
   } catch (e) {
