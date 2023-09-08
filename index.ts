@@ -126,7 +126,7 @@ program.command("setchain <chain>").action(function (chain) {
   setChain(chain);
 });
 
-program.command("setaccountaddress <address>").action(function (address) {
+program.command("setaccount <address>").action(function (address) {
   setAccountAddress(address);
 });
 
