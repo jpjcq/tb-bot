@@ -172,10 +172,16 @@ export default async function sellAtMinimumPrice(
 
   if (toleredPrice < priceInput) {
     throw new Error(
-      `[TB-BOT] Aborting. Price was not met.\nPrice wanted: ${priceInput} | Actual price: ${price.toFixed(
+      `[TB-BOT] Aborting. Price was not met.\n[TB-BOT] Price wanted: ${priceInput} | Actual price: ${price.toFixed(
         6
       )}`
     );
+  } else {
+    console.log(`[TB-BOT] Price matched!`);
+    console.log(
+      `Price wanted: ${priceInput} | Actual price: ${price.toFixed(6)}`
+    );
+    console.log(`Starting swap process..`);
   }
 
   // approve

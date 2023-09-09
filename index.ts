@@ -45,7 +45,7 @@ program
 
 // Main functions
 program
-  .command("listen <token>")
+  .command("listen <tokenAddress>")
   .option("-t --transfer", "token transfer listener")
   .option("-s --swap", "token price listener")
   .action(function (token, options) {

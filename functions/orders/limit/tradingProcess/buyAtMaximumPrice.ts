@@ -173,10 +173,16 @@ export default async function buyAtMaximumPrice(
 
   if (toleredPrice > priceInput) {
     throw new Error(
-      `[TB-BOT] Aborting. Price was not met.\nPrice wanted: ${priceInput} | Actual price: ${price.toFixed(
+      `[TB-BOT] Aborting. Price was not met.\n[TB-BOT] Price wanted: ${priceInput} | Actual price: ${price.toFixed(
         6
       )}`
     );
+  } else {
+    console.log(`[TB-BOT] Price matched!`);
+    console.log(
+      `[TB-BOT] Price wanted: ${priceInput} | Actual price: ${price.toFixed(6)}`
+    );
+    console.log(`[TB-BOT] Starting swap process..`);
   }
 
   // approve
