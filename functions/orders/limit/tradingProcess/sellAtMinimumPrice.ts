@@ -42,10 +42,9 @@ export default async function sellAtMinimumPrice(
   const tokens = tokensFile as TokensType;
 
   if (!tokens[botconfig.chain]) {
-    console.log(
+    throw new Error(
       `[TB_BOT] No token has been saved for the chain ${botconfig.chain}`
     );
-    return;
   }
 
   const token1 = getTokenFromSymbol(token1Symbol);
@@ -96,7 +95,7 @@ export default async function sellAtMinimumPrice(
   ).balanceOf(wallet.address);
 
   if (tokenAmount > Number(formatUnits(tokenInBalance, tokenIn.decimals))) {
-    console.log(
+    throw new Error(
       `[TB-BOT] Insufficient ${
         tokenIn.symbol
       } balance. You're trying to swap ${tokenAmount} ${
@@ -105,7 +104,6 @@ export default async function sellAtMinimumPrice(
         formatUnits(tokenInBalance, tokenIn.decimals)
       ).toFixed(6)} ${tokenIn.symbol}selltest`
     );
-    return;
   }
 
   const swapRoute = new Route([pool], tokenIn, tokenOut);
