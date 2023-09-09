@@ -1,4 +1,4 @@
-# TB Bot - a utility bot for cryptocurrency operations.
+# TB Bot - a utility bot for cryptocurrency operations
 
 > :warning: **Caution**: This project is still under development. Use it at your own risk.
 
@@ -57,11 +57,11 @@ To make the bot globally available, run `npm link` in the directory. This will a
 - **Limit Orders**:
   - Run `npx tb buylimit weth arb 0.1 0.0005` to place a limit order. TB Bot will initiate a child process using `pm2` to monitor the specified trading pair.
 
-### Logs
+## Logs
 
 When placing a limit order, `pm2` will initiate a child process named after the trading pair to monitor and decide whether to execute the buy order. Logs will be stored in the `logs` folder, named after the trading pair with a `.log` extension. Live logs can also be viewed using `pm2 logs`.
 
-### Quote currencies
+## Quote currencies
 
 Prices and buy/sell operations are always based on "quote currencies," similar to how USD is used when buying or selling an item. Quote currencies will default to stablecoins if available, or to WETH (Wrapped Ether) or any future gas tokens if no stablecoin is involved.
 Errors will be thrown under the following conditions:
