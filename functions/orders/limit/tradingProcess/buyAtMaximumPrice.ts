@@ -164,9 +164,10 @@ export default async function buyAtMaximumPrice(
   const tolerance = botconfig.swapOptions.tolerance / 100;
 
   const price =
+    tokenAmount /
     parseFloat(
       formatUnits(decodedQuoteResponse.toString(), quoteCurrency.decimals)
-    ) / tokenAmount;
+    );
 
   const toleredPrice = price * (1 - tolerance);
 
