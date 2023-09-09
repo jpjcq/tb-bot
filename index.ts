@@ -27,6 +27,7 @@ import getSlippage from "./functions/botconfig/get/getSlippage";
 import getDeadline from "./functions/botconfig/get/getDeadline";
 import setSlippage from "./functions/botconfig/set/setSlippage";
 import setDeadline from "./functions/botconfig/set/setDeadline";
+import clearOrderbook from "./functions/orders/clearOrderbook";
 
 program.name("tb-bot").version("1.0.0").description("Crypto utilities bot");
 
@@ -148,6 +149,10 @@ program.command("getaccount").action(function () {
 
 program.command("getprivatekey").action(function () {
   getPrivateKey();
+});
+
+program.command("clearorderbook").action(function () {
+  clearOrderbook();
 });
 
 // botconfig functions: swap options

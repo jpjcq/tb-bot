@@ -28,7 +28,7 @@ export default function startTradingProcess(pairAddress: string) {
     pm2.start(
       {
         script: "./functions/orders/limit/tradingProcess/tradingProcess.ts",
-        interpreter: "/usr/local/bin/ts-node",
+        interpreter: "ts-node",
         name: pairAddress,
         args: [pairAddress],
         output: `./logs/${pairAddress}.log`,
