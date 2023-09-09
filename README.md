@@ -60,3 +60,12 @@ To make the bot globally available, run `npm link` in the directory. This will a
 ### Logs
 
 When placing a limit order, `pm2` will initiate a child process named after the trading pair to monitor and decide whether to execute the buy order. Logs will be stored in the `logs` folder, named after the trading pair with a `.log` extension. Live logs can also be viewed using `pm2 logs`.
+
+### Quote currencies
+
+Prices and buy/sell operations are always based on "quote currencies," similar to how USD is used when buying or selling an item. Quote currencies will default to stablecoins if available, or to WETH (Wrapped Ether) or any future gas tokens if no stablecoin is involved.
+Errors will be thrown under the following conditions:
+
+- Both currencies involved are stablecoins. In this case, the bot will prompt you to use the swap function instead (refer to --help for more details).
+- Neither of the currencies involved is a stablecoin or a gas token like WETH.
+  When trading between a stablecoin and a gas token, the stablecoin will serve as the quote currency.
